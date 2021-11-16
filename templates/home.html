@@ -7,17 +7,23 @@
 
         {% for item in products %}
 
-            <div class="card border-0" style="width: 18rem; margin-right: 10px; margin-bottom: 10px;">
+            <div class="card" style="width: 18rem; margin-right: 10px; margin-bottom: 10px;">
 
                 <img class="card-img-top" src="{{item['productUrl']}}" alt="{{item['name']}} image">
 
                 <div class="card-body">
 
-                    <h5 class="card-title">{{item['name']}}</h5>
+                    <h5 class="card-title">{{item['name']}} - £{{item['price']}}</h5>
 
                     <p class="card-text">{{item['desc']}}</p>
+                    
+                    <div style="width: 100%; display: flex; flex-direction: row;">
 
-                    <a href="#" class="btn btn-primary">BUY</a>
+                        <a href="#" class="btn btn-primary" style="width: 70%;">BUY</a>
+
+                        <input type="number" value=1 style="width: 25%; text-align: center; margin-left:5%; border-radius: 5px;">
+
+                    </div>
                     
                 </div>
             </div>

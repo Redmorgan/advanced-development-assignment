@@ -9,6 +9,7 @@ app = Flask(__name__)
 @app.route('/')
 @app.route('/store')
 def home():
+    # Cloud function for collecting the product data from mongoDB
     url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/collectProducts"
     req = requests.get(url, headers={"Content-type": "application/json", "Accept": "text/plain"})
 
