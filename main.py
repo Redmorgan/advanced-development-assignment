@@ -12,11 +12,11 @@ def home():
 
 @app.route('/ordermanager')
 def about():
-    return render_template('about.html')
+    return render_template('orderManager.html')
 
 @app.route('/admin')
 def form():
-    return render_template('register.html')
+    return render_template('admin.html')
 # [END form]    
 
 # [START submitted]
