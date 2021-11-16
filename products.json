@@ -2,51 +2,61 @@
     {
         "id":"1",
         "name":"Chair",
-        "desc":"This is a chair"    
+        "desc":"This is a chair",
+        "productUrl":"https://picsum.photos/286/180"    
     },
     {
         "id":"2",
         "name":"Table",
-        "desc":"This is a table"    
+        "desc":"This is a table",
+        "productUrl":"https://picsum.photos/286/180"       
     },
     {
         "id":"2",
         "name":"Table",
-        "desc":"This is a table"    
+        "desc":"This is a table",
+        "productUrl":"https://picsum.photos/286/180"       
     },
     {
         "id":"2",
         "name":"Table",
-        "desc":"This is a table"    
+        "desc":"This is a table",
+        "productUrl":"https://picsum.photos/286/180"       
     },
     {
         "id":"2",
         "name":"Table",
-        "desc":"This is a table"    
+        "desc":"This is a table",
+        "productUrl":"https://picsum.photos/286/180"       
     },
     {
         "id":"2",
         "name":"Table",
-        "desc":"This is a table"    
+        "desc":"This is a table",
+        "productUrl":"https://picsum.photos/286/180"       
     },
     {
         "id":"2",
         "name":"Table",
-        "desc":"This is a table"    
+        "desc":"This is a table",
+        "productUrl":"https://picsum.photos/286/180"       
     },
     {
         "id":"2",
         "name":"Table",
-        "desc":"This is a table"    
+        "desc":"This is a table",
+        "productUrl":"https://picsum.photos/286/180"       
     },
     {
         "id":"2",
         "name":"Table",
-        "desc":"This is a table"    
+        "desc":"This is a table",
+        "productUrl":"https://picsum.photos/286/180"       
     },
     {
         "id":"2",
         "name":"Table",
-        "desc":"This is a table"    
+        "desc":"This is a table",
+        "productUrl":"https://picsum.photos/286/180"       
     }
 ]

@@ -14,7 +14,7 @@
     <link href="static/css/custom.css" rel="stylesheet">
   </head>
 
-  {% set navigation_bar = [('/', 'store', 'Store'), ('/ordermanager', 'supplyfulfillment', 'Supply & Fulfillment'), ('/admin','admincentre','Admin Centre')] -%}
+  {% set navigation_bar = [('/store', 'store', 'Store'), ('/ordermanager', 'supplyfulfillment', 'Supply & Fulfillment'), ('/admin','admincentre','Admin Centre')] -%}
 
   {% set active_page = active_page|default('store') -%}
 
@@ -22,7 +22,7 @@
 
     <nav class="navbar navbar-expand-md navbar-dark fixed-top" style="background-color: #0051BA;">
       <!-- Navbar branding. -->
-      <a class="navbar-brand" style="font-size: 30px; font-weight: bold; color:#FFDA1A;">IKEAD</a>
+      <a style="font-size: 30px; color:#FFDA1A; cursor:default;">IKE</a><a style="font-size: 30px; font-weight: bold; color:#FFDA1A; cursor:default;">AD</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -47,8 +47,8 @@
       <div class="collapse navbar-collapse" id="navbarsExampleDefault" style="margin-right: 20px;">
         <ul class="navbar-nav ml-auto">
         
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Dropdown</a>
+            <li class="nav-item dropdown active">
+                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Tom Brown</a>
                 <div class="dropdown-menu">
                   <a class="dropdown-item" href="#">Logout</a>
                 </div>

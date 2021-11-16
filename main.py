@@ -1,17 +1,18 @@
 import logging
 from flask import Flask, render_template,request
 import json
+import requests
 
 app = Flask(__name__)
 
-with open('products.json') as fp:
-    products = json.load(fp)
 
 @app.route('/')
 @app.route('/store')
 def home():
-    return render_template('home.html', products=products)
+    url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/collectProducts"
+    req = requests.get(url, headers={"Content-type": "application/json", "Accept": "text/plain"})
 
+    return render_template('home.html', products=req.json())
 
 @app.route('/ordermanager')
 def about():
@@ -20,26 +21,6 @@ def about():
 @app.route('/admin')
 def form():
     return render_template('admin.html')
-# [END form]    
-
-# [START submitted]
-@app.route('/submitted', methods=['POST'])
-def submitted_form():
-    name = request.form['name']
-    email = request.form['email']
-    site = request.form['site_url']
-    comments = request.form['comments']
-
-    # [END submitted]
-    # [START render_template]
-    return render_template(
-        'submitted_form.html',
-        name=name,
-        email=email,
-        site=site,
-        comments=comments)
-    # [END render_template]
-
 
 @app.errorhandler(500)
 def server_error(e):
@@ -50,8 +31,6 @@ def server_error(e):
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template('404.html'), 404
-
-
 
 if __name__ == '__main__':
     # Only run for local development.
