@@ -5,16 +5,16 @@ app = Flask(__name__)
 
 
 @app.route('/')
-@app.route('/home')
+@app.route('/store')
 def home():
     return render_template('home.html')
 
 
-@app.route('/about')
+@app.route('/ordermanager')
 def about():
     return render_template('about.html')
 
-@app.route('/register')
+@app.route('/admin')
 def form():
     return render_template('register.html')
 # [END form]    
