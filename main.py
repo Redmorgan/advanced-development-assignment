@@ -1,13 +1,16 @@
 import logging
 from flask import Flask, render_template,request
+import json
 
 app = Flask(__name__)
 
+with open('products.json') as fp:
+    products = json.load(fp)
 
 @app.route('/')
 @app.route('/store')
 def home():
-    return render_template('home.html')
+    return render_template('home.html', products=products)
 
 
 @app.route('/ordermanager')

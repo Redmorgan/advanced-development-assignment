@@ -28,7 +28,7 @@
       </button>
 
       <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-        <ul class="navbar-nav mr-auto">
+        <ul class="navbar-nav">
 
           {% for href, id, caption in navigation_bar %}
             {% if id == active_page %}
@@ -40,13 +40,25 @@
                   <a class="nav-link" href="{{ href|e }}">{{ caption|e }}</a>
                 </li>
             {% endif %}
-          {% endfor %}
+          {% endfor %}         
+        </ul>
+      </div>
 
+      <div class="collapse navbar-collapse" id="navbarsExampleDefault" style="margin-right: 20px;">
+        <ul class="navbar-nav ml-auto">
+        
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Dropdown</a>
+                <div class="dropdown-menu">
+                  <a class="dropdown-item" href="#">Logout</a>
+                </div>
+            </li> 
+            
         </ul>
       </div>
     </nav>
 
-    <main role="main" class="container">
+    <main role="main" class="container-fluid" style="height: 85vh;">
 
       <!-- Content -->
       {% block content %}
