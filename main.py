@@ -15,6 +15,10 @@ def home():
 
     return render_template('home.html', products=req.json())
 
+@app.route('/checkout')
+def checkout():
+    return render_template('checkout.html')
+
 @app.route('/ordermanager')
 def about():
     return render_template('orderManager.html')
