@@ -1,5 +1,5 @@
 import logging
-from flask import Flask, render_template,request, session
+from flask import Flask, render_template,request, session, url_for
 import json
 import requests
 
@@ -37,8 +37,18 @@ def checkout():
     return render_template('checkout.html')#, basket = session['basket'])
 
 @app.route('/ordermanager')
-def about():
+def orderManager():
+
+    # Get all order information
+
     return render_template('orderManager.html')
+
+@app.route('/ordermanager/<orderNumber>')
+def orderView(orderNumber):
+
+    # Cloud function to get order details using 'orderNumber'
+
+    return render_template('orderView.html')
 
 @app.route('/admin')
 def form():
