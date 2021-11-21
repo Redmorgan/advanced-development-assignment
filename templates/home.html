@@ -17,13 +17,33 @@
 
                     <p class="card-text">{{item['desc']}}</p>
                     
-                    <div style="width: 100%; display: flex; flex-direction: row;">
+                    <form id="buyProduct_{{ item['id'] }}" style="width: 100%; display: flex; flex-direction: row;">
+                        
+                        <input type="hidden" id="productID_{{item['id']}}" value="{{item['id']}}">
 
-                        <a href="#" class="btn btn-primary" style="width: 70%;">BUY</a>
+                        <input type="button" onclick="addToCart()" value="BUY" class="btn btn-primary border-0" style="width: 70%; outline:none; background-color:#FFDA1A; color:#000000">
 
-                        <input type="number" value=1 style="width: 25%; text-align: center; margin-left:5%; border-radius: 5px;">
+                        <input type="number" id="quantityInput_{{ item['id'] }}" value=1 style="width: 25%; text-align: center; margin-left:5%; border-radius: 5px; outline:none;">
 
-                    </div>
+                        <script>
+
+                            var basket = [];
+            
+                            function addToCart() {
+
+                                console.log("{{item['id']}}");
+                                var productID = document.getElementById(`productID_${"{{item['id']}}"}`).value;
+                                console.log(productID);
+                                var quantity = document.getElementById(`quantityInput_${productID}`).value;
+                                var basketItem = {productID:productID, quantity:quantity};
+                                basket.push(basketItem);
+                                console.log(basket);
+            
+                            }
+            
+                        </script>
+
+                    </form>
                     
                 </div>
             </div>

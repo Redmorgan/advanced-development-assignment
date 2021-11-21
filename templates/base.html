@@ -21,60 +21,81 @@
   <body>
 
     <nav class="navbar navbar-expand-md navbar-dark fixed-top" style="background-color: #0051BA;">
-      <!-- Navbar branding. -->
-      <a style="font-size: 30px; color:#FFDA1A; cursor:default;">IKE</a><a style="font-size: 30px; font-weight: bold; color:#FFDA1A; cursor:default; margin-right: 10px;">AD</a>
+
+      <a style="font-size: 30px; color:#FFDA1A; font-weight: bold; cursor:default;">IKEAD</a>
+
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+
         <span class="navbar-toggler-icon"></span>
+
       </button>
 
       <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+
         <ul class="navbar-nav">
 
           {% for href, id, caption in navigation_bar %}
             {% if id == active_page %}
+
                 <li class="nav-item active">
+
                   <a class="nav-link" href="{{ href|e }}">{{ caption|e }} <span class="sr-only">(current)</span></a>
+
                 </li>
+
             {% else %}
+
                 <li class="nav-item">
+
                   <a class="nav-link" href="{{ href|e }}">{{ caption|e }}</a>
+
                 </li>
+
             {% endif %}
-          {% endfor %}         
+          {% endfor %}    
+
         </ul>
+        
       </div>
 
       <div class="collapse navbar-collapse" id="navbarsExampleDefault" style="margin-right: 20px;">
+
         <ul class="navbar-nav ml-auto">
             
             <li class="nav-item">
 
                 <a class="nav-link" href="/checkout">
                 
-                    <img src="https://i.imgur.com/hF0SqCz.png" alt ="Basket image" style="width: 30px; height:30px" onmouseover=""> 
+                    <img src="https://i.imgur.com/hF0SqCz.png" alt ="Basket image" style="width: 30px; height:30px" onmouseover="" title="Basket"> 
                 
                 </a>
 
             </li>
 
             <li class="nav-item dropdown active">
+
                 <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Tom Brown</a>
+
                 <div class="dropdown-menu">
+
                   <a class="dropdown-item" href="#">Logout</a>
+
                 </div>
+
             </li> 
             
         </ul>
+
       </div>
+
     </nav>
 
     <main role="main" class="container-fluid" style="height: 85vh;">
 
-      <!-- Content -->
       {% block content %}
       {% endblock %}
 
-    </main><!-- /.container -->
+    </main>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
