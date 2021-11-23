@@ -62,32 +62,33 @@
 
         <ul class="navbar-nav ml-auto">
             
-            <button class="btn navbar-btn" style="font-weight: bold; color:#0051BA;" onclick="openLoginOverlay()">Sign In</button>
+            {% if token%}            
+                <li class="nav-item">
 
-            <li class="nav-item">
-
-                <a class="nav-link" href="/checkout">
-                
-                    <img src="https://i.imgur.com/hF0SqCz.png" alt ="Basket image" style="width: 30px; height:30px" onmouseover="" title="Basket"> 
-                
-                </a>
-
-            </li>
-
-            <li class="nav-item dropdown active">
-
-                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Tom Brown</a>
-
-                <div class="dropdown-menu">
+                    <a class="nav-link" href="/checkout">
                     
-                    <a class="dropdown-item" href="/orderhistory">Orders</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" onclick="openLoginOverlay()">Logout</a>
+                        <img src="https://i.imgur.com/hF0SqCz.png" alt ="Basket image" style="width: 30px; height:30px" onmouseover="" title="Basket"> 
+                    
+                    </a>
 
-                </div>
+                </li>
 
-            </li> 
-            
+                <li class="nav-item dropdown active">
+
+                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">{{ name }}</a>
+
+                    <div class="dropdown-menu">
+                        
+                        <a class="dropdown-item" href="/orderhistory">Orders</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" onclick="logout()">Logout</a>
+
+                    </div>
+
+                </li> 
+            {% else %}
+                <button class="btn navbar-btn" style="font-weight: bold; color:#0051BA; cursor: pointer;" onclick="openLoginOverlay()">Sign In</button>
+            {% endif %}
         </ul>
 
       </div>
@@ -103,9 +104,27 @@
 
     <div id="loginOverlay" style="position:fixed; display: none; width: 100%; height:100%; top:0; left:0; right:0; bottom:0; background-color: rgba(0,0,0,0.5); z-index: 1031; align-items: center; justify-content: center;">
 
-        <div id="loginContainer" style="position:relative; width:480px; height:60%; background-color: white; border-radius:10px">
+        <div id="loginContainer" style="position:relative; width:480px; height:40%; background-color: white; border-radius:10px">
 
-            <img src="" alt="" style="width:30px; height:30px; background-color: red; position: absolute;; top:5px; right:5px; cursor: pointer;" onclick="closeLoginOverlay()"/>
+            <img src="https://i.imgur.com/l9ziZ90.png" alt="" style="width:30px; height:30px; position: absolute; top:10px; right:10px; cursor: pointer;" onclick="closeLoginOverlay()"/>
+            
+            <div style="width:80%; height:100%; margin-left: 10%;">
+
+                <h2 style="width:100%; text-align: center; padding-top:20px;">Sign In</h2>
+
+                <div style="width:100%; display:flex; flex-direction:column; margin-top:20px">
+
+                    <label style="margin-bottom:0;">Email:</label>
+                    <input id="usernameInput" style="height:50px; border-radius: 5px; outline:none; padding-left:10px;" type="text"/>
+
+                    <label style="margin-bottom:0; margin-top:5%">Password:</label>
+                    <input id="passwordInput" style="height:50px; border-radius: 5px; outline:none; padding-left:10px;" type="password"/>
+
+                </div>
+
+                <button onclick="login(document.getElementById('usernameInput').value, document.getElementById('passwordInput').value)" style="width:80%; height:50px; margin-left: 10%; margin-top:10%; border-radius: 10px; cursor: pointer; background-color:#0051BA; color:#ffffff; font-size: 25px; border:0px; outline:none;">Sign In</button>
+
+            </div>
 
         </div>
 
@@ -125,6 +144,27 @@
         function closeLoginOverlay() {
           document.getElementById("loginOverlay").style.display = "none";
         }
-        </script>
+    </script>
+
+    <script src="https://www.gstatic.com/firebasejs/8.9.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.9.0/firebase-auth.js"></script>
+    <script>
+        var firebaseConfig = {
+            apiKey: "AIzaSyB-R71ejfT3BLdBUQYzElpk2WGJq7rYWFs",
+            authDomain: "ad-assignment-e572e.firebaseapp.com",
+            projectId: "ad-assignment-e572e",
+            storageBucket: "ad-assignment-e572e.appspot.com",
+            messagingSenderId: "1001766370754",
+            appId: "1:1001766370754:web:248cbbb38cf86779b7ea5b",
+            measurementId: "G-016GE20XNT"
+        };
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
+
+
+    </script>
+
+    <script src="static/scripts/auth_scripts.js"></script>
+       
   </body>
 </html>

@@ -14,28 +14,12 @@ def home():
     url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/collectProducts"
     req = requests.get(url, headers={"Content-type": "application/json", "Accept": "text/plain"})
 
-    if request.method == 'POST':
-        if "buy" in request.form:
-            quantity = request.form.get('amount')
-            productID = request.form.get('productID')
-            print(quantity)
-            print(productID)
-
-            basketItem = {'productID':productID, 'quantity':quantity}
-
-            if not session.get("basket") is None:
-                session['basket'] = session['basket'].extend([basketItem])
-                print("here")
-            else:
-                session['basket'] = [basketItem]
-                print("there")
-
     return render_template('home.html', products=req.json())
 
 # User Checkout
 @app.route('/checkout')
 def checkout():
-    return render_template('checkout.html')#, basket = session['basket'])
+    return render_template('checkout.html')
 
 # Admin Order Manager
 @app.route('/ordermanager')
@@ -85,6 +69,16 @@ def server_error(e):
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template('404.html'), 404
+
+@app.context_processor
+def injectGlobals():
+    userData = authenticate()
+    return dict(token=userData[0], name=userData[1])
+
+def authenticate():
+    authToken = request.cookies.get("token")
+    userRole = request.cookies.get("name")
+    return [authToken, userRole]
 
 if __name__ == '__main__':
     # Only run for local development.
