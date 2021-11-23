@@ -1,5 +1,5 @@
 import logging
-from flask import Flask, render_template,request, session, url_for
+from flask import Flask, render_template,request, session, url_for, redirect
 import json
 import requests
 
@@ -19,7 +19,10 @@ def home():
 # User Checkout
 @app.route('/checkout')
 def checkout():
-    return render_template('checkout.html')
+    if(request.cookies.get("token")):
+        return render_template('checkout.html')
+    else:
+        return redirect(url_for('home'))
 
 # Admin Order Manager
 @app.route('/ordermanager')
