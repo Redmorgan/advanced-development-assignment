@@ -12,11 +12,11 @@
 <div style="width: 100%; height:100%;">
     <div style="width: 50%; height:100%; margin-left: 25%;">
 
-        {% if role == "admin" %}
+        {% if pageType == "admin" %}
 
             <a href="/ordermanager"><label style="margin-bottom: 0px; cursor: pointer;">&lt; Return to orders</label></a>
 
-        {% elif role == "user" %}
+        {% elif pageType == "user" %}
 
             <a href="/orderhistory"><label style="margin-bottom: 0px; cursor: pointer;">&lt; Return to orders</label></a>
 
@@ -90,7 +90,7 @@
 
             </div>
             
-            {% if role == "admin" %}
+            {% if pageType == "admin" %}
 
                 <div style="width:100%; height:7%; display:flex; flex-direction: row; margin-top: 10px;">
                     

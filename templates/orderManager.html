@@ -1,6 +1,14 @@
 {% extends "base.html" %}
 
-{% set active_page = "supplyfulfillment" %}
+{% if pageType == "admin" %}
+
+    {% set active_page = "supplyfulfillment" %}
+
+{% else %}
+
+    {% set active_page = "" %}
+
+{% endif %}
 
 {% block content %}
 
@@ -54,13 +62,13 @@
 
                     <div style="width:3%; height:100%;">
                         
-                        {% if role == "admin" %}
+                        {% if pageType == "admin" %}
 
                             <a href="/ordermanager/1" style="height:100%; width: 100%; display:flex; align-items: center; justify-content: center;">
                                 <img src="https://i.imgur.com/0w6NAn5.png" alt="open order plus image" title="Open Order" style="width: 15px; height: 15px; cursor: pointer;"/>
                             </a>
 
-                        {% elif role == "user" %}
+                        {% elif pageType == "user" %}
 
                             <a href="/orderhistory/1" style="height:100%; width: 100%; display:flex; align-items: center; justify-content: center;">
                                 <img src="https://i.imgur.com/0w6NAn5.png" alt="open order plus image" title="Open Order" style="width: 15px; height: 15px; cursor: pointer;"/>
