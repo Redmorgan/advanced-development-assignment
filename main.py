@@ -14,8 +14,7 @@ def home():
 
     # Cloud function for collecting the product data from mongoDB
     url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/collectProducts"
-    req = requests.get(
-        url, headers={"Content-type": "application/json", "Accept": "text/plain"})
+    req = requests.get(url, headers={"Content-type": "application/json", "Accept": "text/plain"})
 
     return render_template('home.html', products=req.json())
 
@@ -135,7 +134,7 @@ def authenticate():
 
 
 def getUserRole(UID):
-    
+
     url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/getUserRole"
     req = requests.post(url, json={
         "id": UID,
