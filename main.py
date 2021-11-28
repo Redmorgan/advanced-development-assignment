@@ -141,10 +141,22 @@ def getUserRole(UID):
     }, headers={"Content-type": "application/json", "Accept": "text/plain"})
 
     user = req.json()
-    role = user[0]['role']
+
+    if len(user) == 0:
+        role = addNewUser(UID)
+    else:
+        role = user[0]['role']
 
     return(role)
 
+def addNewUser(UID):
+
+    url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/addNewUser"
+    req = requests.post(url, json={
+        "id": UID,
+    })
+
+    return req.text
 
 if __name__ == '__main__':
     # Only run for local development.

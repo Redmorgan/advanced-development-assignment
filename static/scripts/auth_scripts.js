@@ -25,14 +25,14 @@ function login(email, password) {
 
 function signup(email, password){
 
-    
-
     if(email != "" && password != ""){
 
         const auth = firebase.auth();
         auth.createUserWithEmailAndPassword(email, password)
         .then((userCredential) => {
             
+            
+
             login(email, password);
 
         })
