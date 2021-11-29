@@ -19,30 +19,10 @@
                     
                     {% if token %}
                         <form id="buyProduct_{{ item['id'] }}" style="width: 100%; display: flex; flex-direction: row;">
-                            
-                            <input type="hidden" id="productID_{{item['id']}}" value="{{item['id']}}">
 
-                            <input type="button" onclick="addToCart()" value="Add to Cart" class="btn btn-primary border-0" style="width: 70%; outline:none; background-color:#FFDA1A; color:#000000">
+                            <button type="button" onclick="addToCart(this.id)" id="{{ item['id'] }}" class="btn btn-primary border-0" style="width: 70%; outline:none; background-color:#FFDA1A; color:#000000">Add to Cart</button>
 
                             <input type="number" id="quantityInput_{{ item['id'] }}" value=1 style="width: 25%; text-align: center; margin-left:5%; border-radius: 5px; outline:none;">
-
-                            <script>
-
-                                var basket = [];
-                
-                                function addToCart() {
-
-                                    console.log("{{item['id']}}");
-                                    var productID = document.getElementById(`productID_${"{{item['id']}}"}`).value;
-                                    console.log(productID);
-                                    var quantity = document.getElementById(`quantityInput_${productID}`).value;
-                                    var basketItem = {productID:productID, quantity:quantity};
-                                    basket.push(basketItem);
-                                    console.log(basket);
-                
-                                }
-                
-                            </script>
 
                         </form>
                     {% endif %}
@@ -54,5 +34,23 @@
 
     </div>
 </div>
+<script>
 
+    function addToCart(id) {
+        $.ajax({
+            type: "POST",
+            url: "store",
+            data: JSON.stringify({
+                    "productID": id,
+                    "quantity":document.getElementById(`quantityInput_${id}`).value
+                }),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (data) {
+                //alert(JSON.stringify(data));
+            }
+        });
+    }
+
+</script>
 {% endblock %}

@@ -12,21 +12,54 @@ app.config['SECRET_KEY'] = '6ccdb527e50c20c5deb736d0d090f584'
 @app.route('/store', methods=['POST', 'GET'])
 def home():
 
-    # Cloud function for collecting the product data from mongoDB
-    url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/collectProducts"
-    req = requests.get(url, headers={"Content-type": "application/json", "Accept": "text/plain"})
+    #Clears session if not logged in.
+    if (not request.cookies.get("token")):
+        session.clear()
 
-    return render_template('home.html', products=req.json())
+    if (request.method == "POST"):
+
+        basketData = request.get_json()
+
+        basketData['quantity'] = int(basketData['quantity'])
+
+        if (session.get('basket') is None):
+
+            session['basket'] = [basketData]
+
+        else:
+
+            currentBasket = session['basket'].copy()
+            updatedBasket = session['basket'].copy()
+
+            alreadyExists = False
+
+            for index, item in enumerate(currentBasket):
+
+                if (item['productID'] == basketData['productID']):
+                    updatedBasket[index]['quantity'] += basketData['quantity']
+                    alreadyExists = True
+
+            if (alreadyExists == False):
+                updatedBasket.append(basketData)
+
+            session['basket'] = updatedBasket
+
+    return render_template('home.html', products=loadProducts())
+
 
 # User Checkout
-
-
 @app.route('/checkout')
 def checkout():
 
     if(request.cookies.get("token")):
 
-        return render_template('checkout.html')
+        if (session['basket'] is None):
+
+            return render_template('checkout.html', basket=[])
+
+        else:
+
+            return render_template('checkout.html', basket=loadBasketContents())
 
     else:
         
@@ -38,9 +71,11 @@ def checkout():
 def orderManager():
 
     # Get all order information
-    if session['userRole'] == "admin":
+    if (session['userRole'] == "admin"):
 
-        return render_template('orderManager.html', pageType="admin")
+        orders = loadOrders()
+
+        return render_template('orderManager.html', pageType="admin", orders = orders)
 
     else:
 
@@ -52,7 +87,7 @@ def orderManager():
 def orderView(orderNumber):
 
     # Cloud function to get order details using 'orderNumber'
-    if session['userRole'] == "admin":
+    if (session['userRole'] == "admin"):
 
         return render_template('orderView.html', pageType="admin")
 
@@ -66,9 +101,11 @@ def orderView(orderNumber):
 def orderHistory():
 
     # Get all order information
-    if session['userRole'] == "admin" or session['userRole'] == "user":
+    if (session['userRole'] == "admin" or session['userRole'] == "user"):
 
-        return render_template('orderManager.html', pageType="user")
+        orders = loadOrders()
+
+        return render_template('orderManager.html', pageType="user", orders=orders)
 
     else:
 
@@ -80,7 +117,7 @@ def orderHistory():
 def orderHistoryView(orderNumber):
 
     # Cloud function to get order details using 'orderNumber'
-    if session['userRole'] == "admin" or session['userRole'] == "user":
+    if (session['userRole'] == "admin" or session['userRole'] == "user"):
 
         return render_template('orderView.html', pageType="user")
 
@@ -122,7 +159,7 @@ def authenticate():
     authToken = request.cookies.get("token")
     userName = request.cookies.get("name")
 
-    if authToken != "":
+    if (authToken != ""):
 
         session['userRole'] = getUserRole(authToken)
 
@@ -133,6 +170,7 @@ def authenticate():
     return [authToken, userName, session['userRole']]
 
 
+# Collects a users role based off their ID, if they dont have a role, one is assigned to them.
 def getUserRole(UID):
 
     url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/getUserRole"
@@ -142,13 +180,16 @@ def getUserRole(UID):
 
     user = req.json()
 
-    if len(user) == 0:
+    if (len(user) == 0):
         role = addNewUser(UID)
+
     else:
         role = user[0]['role']
 
     return(role)
 
+
+# Creates a new record on mongoDB for the newly registered user.
 def addNewUser(UID):
 
     url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/addNewUser"
@@ -157,6 +198,61 @@ def addNewUser(UID):
     })
 
     return req.text
+
+
+# Loads all products stored on mongoDB
+def loadProducts():
+
+    url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/collectProducts"
+    req = requests.get(url, headers={"Content-type": "application/json", "Accept": "text/plain"})
+
+    return req.json()
+
+
+# Loads all of the order data based on the user role:
+#   userRole = Admin or Staff, Loads all orders on the system.
+#   userRole = user, Loads all the orders that user has made.
+def loadOrders():
+
+    # TODO Cloud function
+    url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/"
+
+    if (session['userRole'] == "admin" or session['userRole'] == "staff"):
+        req = requests.post(url, json={
+        "role": "admin",
+        })
+
+    elif (session['userRole'] == "user"):
+        req = requests.post(url, json={
+        "role": "user",
+        })
+
+    return req.json()
+
+
+# Loads the information about a single order.
+def loadSingleOrder(orderID):
+
+    # TODO Cloud function
+    url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/"
+    req = requests.post(url, json={
+        "id": orderID,
+        })
+
+    return req.json()
+
+
+def loadBasketContents():
+
+    url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/getBasketItemsByID"
+    req = requests.post(url, json={
+        "basket": session['basket'],
+        })
+
+    basketItems = req.json()
+
+    return basketItems
+
 
 if __name__ == '__main__':
     # Only run for local development.
