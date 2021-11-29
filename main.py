@@ -59,7 +59,15 @@ def checkout():
 
         else:
 
-            return render_template('checkout.html', basket=loadBasketContents())
+            basket = loadBasketContents()
+            
+            subTotal = 0
+            for item in basket:
+                subTotal += (item['product'][0]['price'] * item['quantity'])
+
+            tax = subTotal/4
+
+            return render_template('checkout.html', basket=basket, subTotal="{:.2f}".format(subTotal), tax="{:.2f}".format(tax), orderTotal = "{:.2f}".format(subTotal+tax))
 
     else:
         
