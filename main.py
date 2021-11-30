@@ -22,27 +22,29 @@ def home():
 
         basketData['quantity'] = int(basketData['quantity'])
 
-        if (session.get('basket') is None):
+        if (basketData['quantity'] > 0):
 
-            session['basket'] = [basketData]
+            if (session.get('basket') is None):
 
-        else:
+                session['basket'] = [basketData]
 
-            currentBasket = session['basket'].copy()
-            updatedBasket = session['basket'].copy()
+            else:
 
-            alreadyExists = False
+                currentBasket = session['basket'].copy()
+                updatedBasket = session['basket'].copy()
 
-            for index, item in enumerate(currentBasket):
+                alreadyExists = False
 
-                if (item['productID'] == basketData['productID']):
-                    updatedBasket[index]['quantity'] += basketData['quantity']
-                    alreadyExists = True
+                for index, item in enumerate(currentBasket):
 
-            if (alreadyExists == False):
-                updatedBasket.append(basketData)
+                    if (item['productID'] == basketData['productID']):
+                        updatedBasket[index]['quantity'] += basketData['quantity']
+                        alreadyExists = True
 
-            session['basket'] = updatedBasket
+                if (alreadyExists == False):
+                    updatedBasket.append(basketData)
+
+                session['basket'] = updatedBasket
 
     return render_template('home.html', products=loadProducts())
 
@@ -53,9 +55,9 @@ def checkout():
 
     if(request.cookies.get("token")):
 
-        if (session['basket'] is None):
+        if (session.get('basket') is None):
 
-            return render_template('checkout.html', basket=[])
+            return redirect(url_for('home'))
 
         else:
 
@@ -67,12 +69,38 @@ def checkout():
 
             tax = subTotal/4
 
-            return render_template('checkout.html', basket=basket, subTotal="{:.2f}".format(subTotal), tax="{:.2f}".format(tax), orderTotal = "{:.2f}".format(subTotal+tax))
+            if(len(basket) == 0):
+                disable = True
+            else:
+                disable = False
+
+            return render_template('checkout.html', basket=basket, subTotal="{:.2f}".format(subTotal), tax="{:.2f}".format(tax), orderTotal = "{:.2f}".format(subTotal+tax), disable=disable)
 
     else:
         
         return redirect(url_for('home'))
 
+@app.route('/checkout/removeItem', methods=['POST', 'GET'])
+def removeItem():
+    if(request.method == "POST"):
+
+        removeItemJSON = request.get_json()
+
+        removeItemID = removeItemJSON['productID']
+
+        updatedBasket = []
+
+        for item in session['basket']:
+            if item['productID'] != removeItemID:
+                updatedBasket.append(item)
+
+        session['basket'] = updatedBasket
+
+        return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
+
+@app.route('/checkout/address')
+def checkoutAddress():
+    return render_template('orderAddress.html')
 
 # Admin Order Manager
 @app.route('/ordermanager')
@@ -81,9 +109,9 @@ def orderManager():
     # Get all order information
     if (session['userRole'] == "admin"):
 
-        orders = loadOrders()
+        #orders = loadOrders()
 
-        return render_template('orderManager.html', pageType="admin", orders = orders)
+        return render_template('orderManager.html', pageType="admin")#, orders = orders)
 
     else:
 
@@ -111,9 +139,9 @@ def orderHistory():
     # Get all order information
     if (session['userRole'] == "admin" or session['userRole'] == "user"):
 
-        orders = loadOrders()
+        #orders = loadOrders()
 
-        return render_template('orderManager.html', pageType="user", orders=orders)
+        return render_template('orderManager.html', pageType="user")#, orders=orders)
 
     else:
 
