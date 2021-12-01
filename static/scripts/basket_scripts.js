@@ -28,3 +28,35 @@ function removeFromCart(id) {
         }
     });
 }
+
+function saveAddresses() {
+    $.ajax({
+        type: "POST",
+        url: "checkout/address/save",
+        data: JSON.stringify({
+            "delivery":{
+                "firstName":"",
+                "lastName":"",
+                "ad1":"",
+                "ad2":"",
+                "city":"",
+                "postcode":"",
+                "mobile":""
+            },
+            "billing":{
+                "firstName":"",
+                "lastName":"",
+                "ad1":"",
+                "ad2":"",
+                "city":"",
+                "postcode":"",
+                "mobile":""
+            }
+    }),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (data) {
+            location.href('/checkout/confirm')
+        }
+    });
+}

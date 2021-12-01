@@ -30,12 +30,11 @@ def home():
 
             else:
 
-                currentBasket = session['basket'].copy()
                 updatedBasket = session['basket'].copy()
 
                 alreadyExists = False
 
-                for index, item in enumerate(currentBasket):
+                for index, item in enumerate(session['basket']):
 
                     if (item['productID'] == basketData['productID']):
                         updatedBasket[index]['quantity'] += basketData['quantity']
@@ -45,6 +44,10 @@ def home():
                     updatedBasket.append(basketData)
 
                 session['basket'] = updatedBasket
+
+        else:
+
+            print("quantity cant be less than one.")
 
     return render_template('home.html', products=loadProducts())
 
@@ -101,6 +104,25 @@ def removeItem():
 @app.route('/checkout/address')
 def checkoutAddress():
     return render_template('orderAddress.html')
+
+@app.route('/checkout/address/save', methods=['POST', 'GET'])
+def saveAddresses():
+    if(request.method == "POST"):
+
+        address_data = request.form
+
+        session['addresses'] = address_data
+
+        # Cloud function to save order and shit then save order number to session
+
+        return redirect(url_for('submitOrder'))
+
+@app.route('/ordersubmitted')
+def submitOrder():
+
+    # Cloud function to use saved order number to pull all the order data
+
+    return render_template('orderSubmitted.html')
 
 # Admin Order Manager
 @app.route('/ordermanager')
