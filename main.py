@@ -70,7 +70,12 @@ def checkout():
             for item in basket:
                 subTotal += (item['product'][0]['price'] * item['quantity'])
 
+            session['subtotal'] = subTotal
+
             tax = subTotal/4
+            session['tax'] = tax
+
+            session['total'] = tax + subTotal
 
             if(len(basket) == 0):
                 disable = True
@@ -109,20 +114,31 @@ def checkoutAddress():
 def saveAddresses():
     if(request.method == "POST"):
 
-        address_data = request.form
+        session['address'] = (request.form).to_dict()
 
-        session['addresses'] = address_data
+        address_data = session['address']
+
+        basket_data = loadBasketContents()
+
+        # Removes the _id field that mongoDB assigns as it causes an error in the POST request
+        for item in basket_data:
+            product = item['product'][0]
+            del product['_id']
+
+        cost_data = {"subtotal":session['subtotal'], "tax":session['tax'], "total":session['total']}
+
+        orderID = submitOrder(basket_data, cost_data, address_data)
 
         # Cloud function to save order and shit then save order number to session
 
-        return redirect(url_for('submitOrder'))
+        return redirect(url_for('orderSubmitted', orderNumber = orderID))
 
-@app.route('/ordersubmitted')
-def submitOrder():
+@app.route('/ordersubmitted/<orderNumber>')
+def orderSubmitted(orderNumber):
 
     # Cloud function to use saved order number to pull all the order data
 
-    return render_template('orderSubmitted.html')
+    return render_template('orderSubmitted.html', orderNumber = orderNumber)
 
 # Admin Order Manager
 @app.route('/ordermanager')
@@ -310,6 +326,28 @@ def loadBasketContents():
     basketItems = req.json()
 
     return basketItems
+
+def submitOrder(basket_data, cost_data, address_data):
+    # print(basket_data)
+    # print(cost_data)
+    # print(address_data)
+    url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/createNewOrder"
+    req = requests.post(url, json={
+    "order_data":{
+        "basket_data":basket_data,
+        "cost_data":cost_data,
+        "address_data":address_data
+    }
+})
+
+    return req.text
+
+def clearCheckoutSessions():
+
+        session['basket'] = []
+        session['subtotal'] = None
+        session['tax'] = None
+        session['total'] = None
 
 
 if __name__ == '__main__':
