@@ -31,11 +31,11 @@
 
                         <div id="orderSummaryData_right" style="width:30%; height:100%; display: flex; justify-content: space-between; flex-direction: column;">
 
-                            <label>£0.00</label>
+                            <label>£{{ cost['subtotal'] }}</label>
 
-                            <label>£0.00</label>
+                            <label>£{{ cost['tax'] }}</label>
 
-                            <label style="font-weight:bold;">£0.00</label>
+                            <label style="font-weight:bold;">£{{ cost['total'] }}</label>
 
                         </div>
 
@@ -53,11 +53,11 @@
 
                     <div id="deliveryData" style="width:100%; height:70%; display:flex; flex-direction: row; justify-content: space-between; flex-direction: column;">
 
-                        <label>Name</label>
-                        <label>Address Line 1</label>
-                        <label>Address Line 2</label>
-                        <label>City, Postcode</label>
-                        <label>Mobile #</label>
+                        <label>{{ address['d_firstName'] }} {{ address['d_lastName'] }}</label>
+                        <label>{{ address['d_ad1'] }}</label>
+                        <label>{{ address['d_ad2'] }}</label>
+                        <label>{{ address['d_city'] }}, {{ address['d_postcode'] }}</label>
+                        <label>{{ address['d_mobile'] }}</label>
 
                     </div>
 
@@ -73,11 +73,11 @@
 
                     <div id="billingData" style="width:100%; height:70%; display:flex; flex-direction: row; justify-content: space-between; flex-direction: column;">
 
-                        <label>Name</label>
-                        <label>Address Line 1</label>
-                        <label>Address Line 2</label>
-                        <label>City, Postcode</label>
-                        <label>Mobile #</label>
+                        <label>{{ address['b_firstName'] }} {{ address['b_lastName'] }}</label>
+                        <label>{{ address['b_ad1'] }}</label>
+                        <label>{{ address['b_ad2'] }}</label>
+                        <label>{{ address['b_city'] }}, {{ address['b_postcode'] }}</label>
+                        <label>{{ address['b_mobile'] }}</label>
 
                     </div>
 
@@ -100,28 +100,30 @@
 
             <div id="orderContentsBody" style="width: 100%; height:95%; overflow-y: auto;">
 
-                {% for item in order %}
+                {% for item in basket %}
 
-                    <div id="orderItem_{{ item['id'] }}" style="width:100%; height:25%; display:flex; flex-direction: row; margin-bottom: 10px;">
+                    <div id="orderItem_{{ item['product'][0]['id'] }}" style="width:100%; height:25%; display:flex; flex-direction: row; margin-bottom: 10px;">
 
                         <div id="orderItemLeft" style="height:100%; width: 70%; display:flex; flex-direction: row;">
 
-                            <img id="orderItemImg_{{ item['id'] }}" src="{{ item['productURL'] }}" alt="" style="height:100%; border-radius: 10px;">
+                            <img id="orderItemImg_{{ item['product'][0]['id'] }}" src="{{ item['product'][0]['productUrl'] }}" alt="{{ item['product'][0]['name'] }} image" style="height:100%; border-radius: 10px;">
 
-                            <div id="orderItemDetails_{{ item['id'] }}" style="display: flex; flex-direction: column; margin-left: 5px;">
+                            <div id="orderItemDetails_{{ item['product'][0]['id'] }}" style="display: flex; flex-direction: column; margin-left: 5px;">
 
-                                <label>{{ item['name'] }}</label>
-                                <label>{{ item['id'] }}</label>
+                                <label>{{ item['product'][0]['name'] }}</label>
+                                <label>{{ item['product'][0]['id'] }}</label>
 
                             </div>
 
                         </div>
 
-                        <div id="orderItemCosts_{{ item['id'] }}" style="width: 30%; display:flex; flex-direction: row;">
+                        <div id="orderItemCosts_{{ item['product'][0]['id'] }}" style="width: 30%; display:flex; flex-direction: row;">
                             
-                            <label style="width:calc(100%/3)">£{{ item['price'] }}</label>
+
+
+                            <label style="width:calc(100%/3)">£{{ item['product'][0]['price'] }}</label>
                             <label style="width:calc(100%/3)">{{ item['quantity'] }}</label>
-                            <label style="width:calc(100%/3)">£{{ item['price'] *  item['quantity'] }}</label>
+                            <label style="width:calc(100%/3)">£{{ item['subtotal'] }}</label>
 
                         </div>
 

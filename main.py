@@ -114,9 +114,9 @@ def checkoutAddress():
 def saveAddresses():
     if(request.method == "POST"):
 
-        session['address'] = (request.form).to_dict()
+        session['address_data'] = (request.form).to_dict()
 
-        address_data = session['address']
+        address_data = session['address_data']
 
         basket_data = loadBasketContents()
 
@@ -125,9 +125,15 @@ def saveAddresses():
             product = item['product'][0]
             del product['_id']
 
-        cost_data = {"subtotal":session['subtotal'], "tax":session['tax'], "total":session['total']}
+        session['basket_data'] = basket_data
+
+        cost_data = {"subtotal":"{:.2f}".format(session['subtotal']), "tax":"{:.2f}".format(session['tax']), "total":"{:.2f}".format(session['total'])}
+
+        session['cost_data'] = cost_data
 
         orderID = submitOrder(basket_data, cost_data, address_data)
+
+        clearCheckoutSessions()
 
         # Cloud function to save order and shit then save order number to session
 
@@ -138,7 +144,10 @@ def orderSubmitted(orderNumber):
 
     # Cloud function to use saved order number to pull all the order data
 
-    return render_template('orderSubmitted.html', orderNumber = orderNumber)
+    print(session['address_data'])
+
+
+    return render_template('orderSubmitted.html', orderNumber = orderNumber, basket = session['basket_data'], cost = session['cost_data'], address = session['address_data'])
 
 # Admin Order Manager
 @app.route('/ordermanager')
@@ -328,12 +337,10 @@ def loadBasketContents():
     return basketItems
 
 def submitOrder(basket_data, cost_data, address_data):
-    # print(basket_data)
-    # print(cost_data)
-    # print(address_data)
     url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/createNewOrder"
     req = requests.post(url, json={
     "order_data":{
+        "userID":request.cookies.get("token"),
         "basket_data":basket_data,
         "cost_data":cost_data,
         "address_data":address_data
