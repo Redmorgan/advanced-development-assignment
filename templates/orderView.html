@@ -17,25 +17,91 @@
 
         {% endif %}
 
-        <h1>Order #</h1>
+        <div style="display: flex; flex-direction:row; align-items:center;">
+
+            <h1>Order #{{ order[0]['orderID'] }}</h1>
+
+            {% if order[0]['trackingURL'] != "unassigned" %}
+
+                <a href="{{ order[0]['trackingURL'] }}" style="margin-left:20px"><h3>Track your Order</h3></a>
+
+            {% endif %}
+
+        </div>
 
         <div id="orderDetailsContatiner" style="width:100%; height:25%; background-color: rgba(248, 248, 248, 1); border-radius: 10px; display: flex; flex-direction: row;">
 
             <div id="orderSummary" style="height:100%; width:calc(100%/3); border-right: 1px solid rgba(234,234,234,1);">
 
-                <label style="margin-top: 10px; margin-left: 10px; font-size:20px">Order Summary</label>
+                <div id="orderSummaryWrapper" style="height:100%; width:80%; margin-left:10%; margin-top: 10px;">
+
+                    <label style="font-size:20px">Order Summary</label>
+
+                    <div id="orderSummaryData" style="width:100%; height:70%; display:flex; flex-direction: row;">
+
+                        <div id="orderSummaryData_left" style="width:70%; height:100%; display: flex; justify-content: space-between; flex-direction: column;">
+
+                            <label>Subtotal:</label>
+
+                            <label>Total VAT(25%):</label>
+
+                            <label>Total:</label>
+                            
+                        </div>
+
+                        <div id="orderSummaryData_right" style="width:30%; height:100%; display: flex; justify-content: space-between; flex-direction: column;">
+
+                            <label>£{{ order[0]['billing']['subtotal'] }}</label>
+
+                            <label>£{{ '%0.2f' % order[0]['billing']['tax'] }}</label>
+
+                            <label style="font-weight:bold;">£{{ '%0.2f' % order[0]['billing']['total'] }}</label>
+
+                        </div>
+
+                    </div>
+
+                </div>
 
             </div>
 
             <div id="deliveryInformation" style="height:100%; width:calc(100%/3); border-right: 1px solid rgba(234,234,234,1);">
 
-                <label style="margin-top: 10px; margin-left: 10px; font-size:20px">Delivery Information</label>
+                <div id="orderSummaryWrapper" style="height:100%; width:80%; margin-left:10%; margin-top: 10px;">
+
+                    <label style="font-size:20px; margin-bottom: 4px;">Delivery Information</label>
+
+                    <div id="deliveryData" style="width:100%; height:70%; display:flex; flex-direction: row; justify-content: space-between; flex-direction: column;">
+
+                        <label>{{ order[0]['addresses']['d_firstName'] }} {{ order[0]['addresses']['d_lastName'] }}</label>
+                        <label>{{ order[0]['addresses']['d_ad1'] }}</label>
+                        <label>{{ order[0]['addresses']['d_ad2'] }}</label>
+                        <label>{{ order[0]['addresses']['d_city'] }}, {{ order[0]['addresses']['d_postcode'] }}</label>
+                        <label>{{ order[0]['addresses']['d_mobile'] }}</label>
+
+                    </div>
+
+                </div>
 
             </div>
 
             <div id="billingInformation" style="height:100%; width:calc(100%/3);">
 
-                <label style="margin-top: 10px; margin-left: 10px; font-size:20px">Billing Information</label>
+                <div id="orderSummaryWrapper" style="height:100%; width:80%; margin-left:10%; margin-top: 10px;">
+
+                    <label style="font-size:20px; margin-bottom: 4px;">Billing Information</label>
+
+                    <div id="billingData" style="width:100%; height:70%; display:flex; flex-direction: row; justify-content: space-between; flex-direction: column;">
+
+                        <label>{{ order[0]['addresses']['b_firstName'] }} {{ order[0]['addresses']['b_lastName'] }}</label>
+                        <label>{{ order[0]['addresses']['b_ad1'] }}</label>
+                        <label>{{ order[0]['addresses']['b_ad2'] }}</label>
+                        <label>{{ order[0]['addresses']['b_city'] }}, {{ order[0]['addresses']['b_postcode'] }}</label>
+                        <label>{{ order[0]['addresses']['b_mobile'] }}</label>
+
+                    </div>
+
+                </div>
 
             </div>
 
@@ -54,18 +120,18 @@
 
             <div id="orderContentsBody" style="width: 100%; height:95%; overflow-y: auto;">
 
-                {% for item in order %}
+                {% for item in order[0]['orderContents'] %}
 
                     <div id="orderItem_{{ item['id'] }}" style="width:100%; height:25%; display:flex; flex-direction: row; margin-bottom: 10px;">
 
                         <div id="orderItemLeft" style="height:100%; width: 70%; display:flex; flex-direction: row;">
 
-                            <img id="orderItemImg_{{ item['id'] }}" src="{{ item['productURL'] }}" alt="" style="height:100%; border-radius: 10px;">
+                            <img id="orderItemImg_{{ item['id'] }}" src="{{ item['product'][0]['productUrl'] }}" alt="" style="height:100%; border-radius: 10px;">
 
                             <div id="orderItemDetails_{{ item['id'] }}" style="display: flex; flex-direction: column; margin-left: 5px;">
 
-                                <label>{{ item['name'] }}</label>
-                                <label>{{ item['id'] }}</label>
+                                <label>{{ item['product'][0]['name'] }}</label>
+                                <label>{{ item['product'][0]['id'] }}</label>
 
                             </div>
 
@@ -73,9 +139,9 @@
 
                         <div id="orderItemCosts_{{ item['id'] }}" style="width: 30%; display:flex; flex-direction: row;">
                             
-                            <label style="width:calc(100%/3)">£{{ item['price'] }}</label>
+                            <label style="width:calc(100%/3)">£{{ item['product'][0]['price'] }}</label>
                             <label style="width:calc(100%/3)">{{ item['quantity'] }}</label>
-                            <label style="width:calc(100%/3)">£{{ item['price'] *  item['quantity'] }}</label>
+                            <label style="width:calc(100%/3)">£{{ item['subtotal'] }}</label>
 
                         </div>
 
@@ -87,19 +153,21 @@
             
             {% if pageType == "admin" %}
 
-                <div style="width:100%; height:7%; display:flex; flex-direction: row; margin-top: 10px;">
+                <form style="width:100%; height:7%; display:flex; flex-direction: row; margin-top: 10px;" method="POST" action="/ordermanager/{{ order[0]['orderID'] }}/update">
                     
-                    <select name="orderStatus" id="orderStatus" style="width:15%; height:100%; margin-right:1%; border-radius: 10px; outline:none; margin-left:73%">
-
+                    <input type="text" name="trackingURL" placeholder="Tracking URL" style = "width:30%; height:100%; border-radius: 5px; outline:none; padding-left:10px">
+                    
+                    <select name="orderStatus" id="orderStatus" style="width:15%; height:100%; margin-right:1%; margin-left:1%; border-radius: 5px; outline:none;">
+                        
                         <option>In progress</option>
                         <option>Completed</option>
                         <option>Cancelled</option>
 
                     </select>
 
-                    <button id="searchOrders" style="width:10%; height:100%; cursor: pointer; background-color: #0051BA; color:#FFDA1A; font-weight: bold; border:none; border-radius: 10px; outline:none; right:0;">UPDATE</button>
+                    <input type="submit" value="UPDATE" style="width:10%; height:100%; cursor: pointer; background-color: #0051BA; color:#FFDA1A; font-weight: bold; border:none; border-radius: 10px; outline:none; right:0;"/>
 
-                </div>
+                </form>
 
             {% endif %}
 
