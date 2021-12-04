@@ -144,8 +144,6 @@ def orderSubmitted(orderNumber):
 
     # Cloud function to use saved order number to pull all the order data
 
-    print(session['address_data'])
-
 
     return render_template('orderSubmitted.html', orderNumber = orderNumber, basket = session['basket_data'], cost = session['cost_data'], address = session['address_data'])
 
@@ -156,9 +154,9 @@ def orderManager():
     # Get all order information
     if (session['userRole'] == "admin"):
 
-        #orders = loadOrders()
+        orders = loadOrders("All", request.cookies.get("token"))
 
-        return render_template('orderManager.html', pageType="admin")#, orders = orders)
+        return render_template('orderManager.html', pageType="admin", order = orders)
 
     else:
 
@@ -172,12 +170,27 @@ def orderView(orderNumber):
     # Cloud function to get order details using 'orderNumber'
     if (session['userRole'] == "admin"):
 
-        return render_template('orderView.html', pageType="admin")
+        order = loadOrders("Single", int(orderNumber))
+
+        return render_template('orderView.html', pageType="admin", order = order)
 
     else:
 
         return redirect(url_for('home'))
 
+# Admin Order Manager (Single order)
+@app.route('/ordermanager/<orderNumber>/update', methods=['POST', 'GET'])
+def updateOrder(orderNumber):
+
+    if(request.method == "POST"):
+
+        orderStatus = request.form.get('orderStatus')
+        trackingURL = request.form.get('trackingURL')
+
+        print(orderStatus)
+        print(trackingURL)
+
+        return redirect(url_for('orderView', orderNumber = orderNumber))
 
 # User Order History
 @app.route('/orderhistory')
@@ -186,9 +199,9 @@ def orderHistory():
     # Get all order information
     if (session['userRole'] == "admin" or session['userRole'] == "user"):
 
-        #orders = loadOrders()
+        orders = loadOrders("All", request.cookies.get("token"))
 
-        return render_template('orderManager.html', pageType="user")#, orders=orders)
+        return render_template('orderManager.html', pageType="user", order=orders)
 
     else:
 
@@ -202,7 +215,9 @@ def orderHistoryView(orderNumber):
     # Cloud function to get order details using 'orderNumber'
     if (session['userRole'] == "admin" or session['userRole'] == "user"):
 
-        return render_template('orderView.html', pageType="user")
+        order = loadOrders("Single", int(orderNumber))
+
+        return render_template('orderView.html', pageType="user", order=order)
 
     else:
 
@@ -295,20 +310,17 @@ def loadProducts():
 # Loads all of the order data based on the user role:
 #   userRole = Admin or Staff, Loads all orders on the system.
 #   userRole = user, Loads all the orders that user has made.
-def loadOrders():
+def loadOrders(amount, uid):
 
-    # TODO Cloud function
-    url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/"
+    url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/getOrder"
 
-    if (session['userRole'] == "admin" or session['userRole'] == "staff"):
-        req = requests.post(url, json={
-        "role": "admin",
-        })
-
-    elif (session['userRole'] == "user"):
-        req = requests.post(url, json={
-        "role": "user",
-        })
+    req = requests.post(url, json={
+        "request_data":{
+            "amount":amount,
+            "role":session['userRole'],
+            "UID":uid
+        }
+    })
 
     return req.json()
 

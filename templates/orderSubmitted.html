@@ -33,9 +33,9 @@
 
                             <label>£{{ cost['subtotal'] }}</label>
 
-                            <label>£{{ cost['tax'] }}</label>
+                            <label>£{{ '%0.2f' % cost['tax'] }}</label>
 
-                            <label style="font-weight:bold;">£{{ cost['total'] }}</label>
+                            <label style="font-weight:bold;">£{{ '%0.2f' % cost['total'] }}</label>
 
                         </div>
 
@@ -119,8 +119,6 @@
 
                         <div id="orderItemCosts_{{ item['product'][0]['id'] }}" style="width: 30%; display:flex; flex-direction: row;">
                             
-
-
                             <label style="width:calc(100%/3)">£{{ item['product'][0]['price'] }}</label>
                             <label style="width:calc(100%/3)">{{ item['quantity'] }}</label>
                             <label style="width:calc(100%/3)">£{{ item['subtotal'] }}</label>
