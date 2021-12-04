@@ -35,12 +35,12 @@
 
             <div id="orderListHeader" style="width:100%; height:5%; display:flex; flex-direction: row; color:rgba(147, 147, 147, 1); border-bottom: 1px solid #000000">
 
-                <label style="width: 13%; height:100%; margin-left: 4%; margin-bottom: 0px; display: flex; align-items: center;">Order No.</label>                
-                <label style="width: 16%; height:100%; margin-bottom: 0px; display: flex; align-items: center;">Order Date</label>
-                <label style="width: 16%; height:100%; margin-bottom: 0px; display: flex; align-items: center;">Customer</label>
-                <label style="width: 16%; height:100%; margin-bottom: 0px; display: flex; align-items: center;">No. of Items</label>
-                <label style="width: 16%; height:100%; margin-bottom: 0px; display: flex; align-items: center;">Order Total</label>
-                <label style="width: 16%; height:100%; margin-bottom: 0px; display: flex; align-items: center;">Current Status</label>
+                <label style="width: 19.4%; height:100%; margin-left: 4%; margin-bottom: 0px; display: flex; align-items: center;">Order No.</label>                
+                <label style="width: 19.4%; height:100%; margin-bottom: 0px; display: flex; align-items: center;">Order Date</label>
+                <label style="width: 19.4%; height:100%; margin-bottom: 0px; display: flex; align-items: center;">No. of Items</label>
+                <label style="width: 19.4%; height:100%; margin-bottom: 0px; display: flex; align-items: center;">Order Total</label>
+                <label style="width: 19.4%; height:100%; margin-bottom: 0px; display: flex; align-items: center;">Current Status</label>
+                <div style="width:3%; height:100%"></div>
 
             </div>
 
@@ -48,36 +48,34 @@
 
                 {% for item in order %}
 
+                    <div id="orderListItemRow_" style="width:100%; height:6%; display:flex; flex-direction: row; border-bottom: 1px solid rgba(0,0,0,.125)">
 
-                {% endfor %}
+                        <label id="orderListItem_1_{{ item['orderID'] }}" style="width: 19.4%; height:100%; margin-left: 4%; margin-bottom: 0px; display: flex; align-items: center;">{{ item['orderID'] }}</label>                
+                        <label id="orderListItem_2_{{ item['orderID'] }}" style="width: 19.4%; height:100%; margin-bottom: 0px; display: flex; align-items: center;">10/03/2000</label>
+                        <label id="orderListItem_3_{{ item['orderID'] }}" style="width: 19.4%; height:100%; margin-bottom: 0px; display: flex; align-items: center;">{{ item['orderContents'] }}</label>
+                        <label id="orderListItem_4_{{ item['orderID'] }}" style="width: 19.4%; height:100%; margin-bottom: 0px; display: flex; align-items: center;">£{{ item['billing']['total'] }}</label>
+                        <label id="orderListItem_5_{{ item['orderID'] }}" style="width: 19.4%; height:100%; margin-bottom: 0px; display: flex; align-items: center; font-weight: bold;">{{ item['orderStatus'] }}</label>
 
-                <div id="orderListItemRow_" style="width:100%; height:6%; display:flex; flex-direction: row; border-bottom: 1px solid rgba(0,0,0,.125)">
+                        <div style="width:3%; height:100%;">
+                            
+                            {% if pageType == "admin" %}
 
-                    <label id="orderListItem_1_" style="width: 13%; height:100%; margin-left: 4%; margin-bottom: 0px; display: flex; align-items: center;">1</label>                
-                    <label id="orderListItem_2_" style="width: 16%; height:100%; margin-bottom: 0px; display: flex; align-items: center;">10/03/2000</label>
-                    <label id="orderListItem_3_" style="width: 16%; height:100%; margin-bottom: 0px; display: flex; align-items: center;">Will Wernick</label>
-                    <label id="orderListItem_4_" style="width: 16%; height:100%; margin-bottom: 0px; display: flex; align-items: center;">4</label>
-                    <label id="orderListItem_5_" style="width: 16%; height:100%; margin-bottom: 0px; display: flex; align-items: center;">£4.00</label>
-                    <label id="orderListItem_6_" style="width: 16%; height:100%; margin-bottom: 0px; display: flex; align-items: center; font-weight: bold;">NEW</label>
+                                <a href="/ordermanager/{{ item['orderID'] }}" style="height:100%; width: 100%; display:flex; align-items: center; justify-content: center;">
+                                    <img src="https://i.imgur.com/0w6NAn5.png" alt="open order plus image" title="Open Order" style="width: 15px; height: 15px; cursor: pointer;"/>
+                                </a>
 
-                    <div style="width:3%; height:100%;">
-                        
-                        {% if pageType == "admin" %}
+                            {% elif pageType == "user" %}
 
-                            <a href="/ordermanager/1" style="height:100%; width: 100%; display:flex; align-items: center; justify-content: center;">
-                                <img src="https://i.imgur.com/0w6NAn5.png" alt="open order plus image" title="Open Order" style="width: 15px; height: 15px; cursor: pointer;"/>
-                            </a>
+                                <a href="/orderhistory/{{ item['orderID'] }}" style="height:100%; width: 100%; display:flex; align-items: center; justify-content: center;">
+                                    <img src="https://i.imgur.com/0w6NAn5.png" alt="open order plus image" title="Open Order" style="width: 15px; height: 15px; cursor: pointer;"/>
+                                </a>
 
-                        {% elif pageType == "user" %}
+                            {% endif %}
+                        </div>
 
-                            <a href="/orderhistory/1" style="height:100%; width: 100%; display:flex; align-items: center; justify-content: center;">
-                                <img src="https://i.imgur.com/0w6NAn5.png" alt="open order plus image" title="Open Order" style="width: 15px; height: 15px; cursor: pointer;"/>
-                            </a>
-
-                        {% endif %}
                     </div>
 
-                </div>
+                {% endfor %}
 
             </div>
 
