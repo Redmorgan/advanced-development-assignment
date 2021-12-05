@@ -232,9 +232,28 @@ def orderHistoryView(orderNumber):
 
 # Admin Controls
 @app.route('/admin')
-def form():
+def admin():
 
     return render_template('admin.html', products=loadProducts())
+
+@app.route('/admin/create', methods=['POST', 'GET'])
+def createProduct():
+
+    if(request.method == "POST"):
+
+        url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/createProduct"
+        requests.post(url, json=
+        {
+            "product_data":{
+                "id":request.form.get('productCodeInput'),
+                "name":request.form.get('productNameInput'),
+                "desc":request.form.get('ProductDescInput'),
+                "productUrl":"",#request.form.get('orderStatus'),
+                "price":float(request.form.get('productPriceInput'))
+            }  
+        }, headers={"Content-type": "application/json", "Accept": "text/plain"})
+
+    return redirect(url_for('admin'))
 
 
 # 500 Error response
