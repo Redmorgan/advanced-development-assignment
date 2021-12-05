@@ -89,6 +89,7 @@ def checkout():
         
         return redirect(url_for('home'))
 
+
 @app.route('/checkout/removeItem', methods=['POST', 'GET'])
 def removeItem():
     if(request.method == "POST"):
@@ -107,9 +108,11 @@ def removeItem():
 
         return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
 
+
 @app.route('/checkout/address')
 def checkoutAddress():
     return render_template('orderAddress.html')
+
 
 @app.route('/checkout/address/save', methods=['POST', 'GET'])
 def saveAddresses():
@@ -140,6 +143,7 @@ def saveAddresses():
 
         return redirect(url_for('orderSubmitted', orderNumber = orderID))
 
+
 @app.route('/ordersubmitted/<orderNumber>')
 def orderSubmitted(orderNumber):
 
@@ -147,6 +151,7 @@ def orderSubmitted(orderNumber):
 
 
     return render_template('orderSubmitted.html', orderNumber = orderNumber, basket = session['basket_data'], cost = session['cost_data'], address = session['address_data'])
+
 
 # Admin Order Manager
 @app.route('/ordermanager')
@@ -179,6 +184,7 @@ def orderView(orderNumber):
 
         return redirect(url_for('home'))
 
+
 # Admin Order Manager (Single order)
 @app.route('/ordermanager/<orderNumber>/update', methods=['POST', 'GET'])
 def updateOrder(orderNumber):
@@ -198,6 +204,7 @@ def updateOrder(orderNumber):
         }, headers={"Content-type": "application/json", "Accept": "text/plain"})
 
         return redirect(url_for('orderView', orderNumber = orderNumber))
+
 
 # User Order History
 @app.route('/orderhistory')
@@ -237,10 +244,13 @@ def admin():
 
     return render_template('admin.html', products=loadProducts())
 
+
 @app.route('/admin/create', methods=['POST', 'GET'])
 def createProduct():
 
     if(request.method == "POST"):
+
+
 
         url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/createProduct"
         requests.post(url, json=
@@ -256,6 +266,18 @@ def createProduct():
 
     return redirect(url_for('admin'))
 
+@app.route('/admin/delete/<productID>', methods=['POST', 'GET'])
+def deleteProduct(productID):
+
+    if(request.method == "POST"):
+
+        url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/deleteProduct"
+        requests.post(url, json=
+        {
+            "product_id":productID 
+        }, headers={"Content-type": "application/json", "Accept": "text/plain"})
+
+    return redirect(url_for('admin'))
 
 # 500 Error response
 @app.errorhandler(500)
@@ -334,8 +356,10 @@ def loadProducts():
 
 
 # Loads all of the order data based on the user role:
-#   userRole = Admin or Staff, Loads all orders on the system.
-#   userRole = user, Loads all the orders that user has made.
+#   role = Admin, Loads all orders on the system.
+#   role = user, Loads all the orders that user has made.
+#   amount = All, loads all orders
+#   amount = Single, loads a single order based on UID
 def loadOrders(amount, uid):
 
     url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/getOrder"
@@ -351,18 +375,6 @@ def loadOrders(amount, uid):
     return req.json()
 
 
-# Loads the information about a single order.
-def loadSingleOrder(orderID):
-
-    # TODO Cloud function
-    url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/"
-    req = requests.post(url, json={
-        "id": str(orderID),
-        })
-
-    return req.json()
-
-
 def loadBasketContents():
 
     url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/getBasketItemsByID"
@@ -373,6 +385,7 @@ def loadBasketContents():
     basketItems = req.json()
 
     return basketItems
+
 
 def submitOrder(basket_data, cost_data, address_data):
 
