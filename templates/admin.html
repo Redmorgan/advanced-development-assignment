@@ -15,7 +15,7 @@
     
                 <div class="card" style="width: 18rem; margin-right: 10px; margin-bottom: 10px;">
     
-                    <img class="card-img-top" src="{{item['productUrl']}}" alt="{{item['name']}} image">
+                    <img class="card-img-top" style="width:286px; height:180px;" src="{{item['productUrl']}}" alt="{{item['name']}} image">
     
                     <div class="card-body">
     
@@ -51,7 +51,7 @@
 
                 <h2 id="productInputHeader" style="width:100%; text-align: center; padding-top:5%;">New Product</h2>
 
-                <form id="productForm" style="width:100%; display:flex; flex-direction:column; margin-top:20px" method="POST">
+                <form id="productForm" style="width:100%; display:flex; flex-direction:column; margin-top:20px" method="POST" enctype="multipart/form-data">
                     
                     <label style="margin-bottom:0;">Product Code:</label>
                     <input name="productCodeInput" style="height:40px; border-radius: 5px; outline:none; padding-left:10px; cursor:text;" placeholder="Enter Product Code (required)" type="text" required/>
@@ -64,7 +64,7 @@
                     
                     <div style ="display: flex; flex-direction: row;  margin-top:3%; align-items: center;">
                         <label style="margin-bottom:0; width:120px">Product Image:</label>
-                        <input type="file" accept="image/*" id="productImageUpload" hidden/>
+                        <input type="file" accept="image/*" id="productImageUpload" name="productImageUpload" hidden/>
                         <label for="productImageUpload" style="height:40px; width:40%; border-radius: 5px; cursor: pointer; background-color:#0051BA; color:#ffffff; font-size: 20px; border:0px; outline:none; display: flex; justify-content: center; align-items: center; margin-bottom:0;">Upload a File</label>
                         <label id="file-chosen" style="font-size:15px; margin-bottom:0; margin-left:10px; width:100px; overflow: hidden; text-overflow: ellipsis;">No file chosen</label>
                     </div>

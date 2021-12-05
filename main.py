@@ -3,6 +3,7 @@ from flask import Flask, render_template, request, session, url_for, redirect
 import json
 import requests
 from datetime import datetime
+from google.cloud import storage
 
 app = Flask(__name__)
 
@@ -250,7 +251,10 @@ def createProduct():
 
     if(request.method == "POST"):
 
-
+        storage_client = storage.Client.from_service_account_json("Key.json")
+        bucket = storage_client.bucket('teak-amphora-328909.appspot.com')
+        blob = bucket.blob(request.form.get('productNameInput') + "-" + request.form.get('productCodeInput')+".png")
+        blob.upload_from_file(request.files['productImageUpload'])
 
         url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/createProduct"
         requests.post(url, json=
@@ -259,7 +263,7 @@ def createProduct():
                 "id":request.form.get('productCodeInput'),
                 "name":request.form.get('productNameInput'),
                 "desc":request.form.get('ProductDescInput'),
-                "productUrl":"",#request.form.get('orderStatus'),
+                "productUrl":blob.public_url,
                 "price":float(request.form.get('productPriceInput'))
             }  
         }, headers={"Content-type": "application/json", "Accept": "text/plain"})
