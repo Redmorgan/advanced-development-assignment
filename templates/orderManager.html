@@ -51,7 +51,7 @@
                     <div id="orderListItemRow_" style="width:100%; height:6%; display:flex; flex-direction: row; border-bottom: 1px solid rgba(0,0,0,.125)">
 
                         <label id="orderListItem_1_{{ item['orderID'] }}" style="width: 19.4%; height:100%; margin-left: 4%; margin-bottom: 0px; display: flex; align-items: center;">{{ item['orderID'] }}</label>                
-                        <label id="orderListItem_2_{{ item['orderID'] }}" style="width: 19.4%; height:100%; margin-bottom: 0px; display: flex; align-items: center;">10/03/2000</label>
+                        <label id="orderListItem_2_{{ item['orderID'] }}" style="width: 19.4%; height:100%; margin-bottom: 0px; display: flex; align-items: center;">{{ item['orderDate'] }}</label>
                         <label id="orderListItem_3_{{ item['orderID'] }}" style="width: 19.4%; height:100%; margin-bottom: 0px; display: flex; align-items: center;">{{ item['orderContents'] }}</label>
                         <label id="orderListItem_4_{{ item['orderID'] }}" style="width: 19.4%; height:100%; margin-bottom: 0px; display: flex; align-items: center;">£{{ item['billing']['total'] }}</label>
 

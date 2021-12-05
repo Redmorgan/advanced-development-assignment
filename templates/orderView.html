@@ -21,7 +21,7 @@
 
             <h1>Order #{{ order[0]['orderID'] }}</h1>
 
-            {% if order[0]['trackingURL'] != "unassigned" or order[0]['trackingURL'] != ""  %}
+            {% if order[0]['trackingURL'] != "unassigned"%}
 
                 <a href="{{ order[0]['trackingURL'] }}" style="margin-left:20px"><h3>Track your Order</h3></a>
 

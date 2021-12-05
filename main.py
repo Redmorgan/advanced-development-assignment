@@ -2,6 +2,7 @@ import logging
 from flask import Flask, render_template, request, session, url_for, redirect
 import json
 import requests
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -374,13 +375,17 @@ def loadBasketContents():
     return basketItems
 
 def submitOrder(basket_data, cost_data, address_data):
+
+    date = datetime.now()
+
     url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/createNewOrder"
     req = requests.post(url, json={
     "order_data":{
         "userID":request.cookies.get("token"),
         "basket_data":basket_data,
         "cost_data":cost_data,
-        "address_data":address_data
+        "address_data":address_data,
+        "order_date":date.strftime("%d/%m/%y")
     }
 })
 
