@@ -24,7 +24,7 @@
                         <p class="card-text">{{item['desc']}}</p>
 
                         <div style="display: flex; flex-direction: row;">
-                            <button type="button" onclick="openEditProductOverlay()" class="btn btn-primary border-0" style="width: 48%; outline:none; background-color:#FFDA1A; color:#000000">EDIT</button>
+                            <button type="button" id="{{item['id']}}" onclick="openEditProductOverlay(this.id)" class="btn btn-primary border-0" style="width: 48%; outline:none; background-color:#FFDA1A; color:#000000">EDIT</button>
                             <button type="button" id="{{item['id']}}" onclick="openDeleteProductOverlay(this.id)" class="btn btn-primary border-0" style="width: 48%; margin-left:4%; outline:none; background-color:red; color:#ffffff">DELETE</button>
                             
                         </div>
@@ -54,13 +54,13 @@
                 <form id="productForm" style="width:100%; display:flex; flex-direction:column; margin-top:20px" method="POST" enctype="multipart/form-data">
                     
                     <label style="margin-bottom:0;">Product Code:</label>
-                    <input name="productCodeInput" style="height:40px; border-radius: 5px; outline:none; padding-left:10px; cursor:text;" placeholder="Enter Product Code (required)" type="text" required/>
+                    <input name="productCodeInput" id="productCodeInput" style="height:40px; border-radius: 5px; outline:none; padding-left:10px; cursor:text;" placeholder="Enter Product Code (required)" type="text" required/>
 
                     <label style="margin-bottom:0; margin-top:3%">Product Name:</label>
-                    <input name="productNameInput" style="height:40px; border-radius: 5px; outline:none; padding-left:10px; cursor:text;" placeholder="Enter Product Name (required)" type="text" required/>
+                    <input name="productNameInput" id="productNameInput" style="height:40px; border-radius: 5px; outline:none; padding-left:10px; cursor:text;" placeholder="Enter Product Name (required)" type="text" required/>
 
                     <label style="margin-bottom:0; margin-top:3%">Description:</label>
-                    <textarea name="ProductDescInput" style="height:80px; border-radius: 5px; outline:none; padding-left:10px; padding-right:10px; resize: none; cursor:text;" placeholder="Enter Product Description"></textarea>
+                    <textarea name="ProductDescInput" id="ProductDescInput" style="height:80px; border-radius: 5px; outline:none; padding-left:10px; padding-right:10px; resize: none; cursor:text;" placeholder="Enter Product Description"></textarea>
                     
                     <div style ="display: flex; flex-direction: row;  margin-top:3%; align-items: center;">
                         <label style="margin-bottom:0; width:120px">Product Image:</label>
@@ -69,8 +69,8 @@
                         <label id="file-chosen" style="font-size:15px; margin-bottom:0; margin-left:10px; width:100px; overflow: hidden; text-overflow: ellipsis;">No file chosen</label>
                     </div>
 
-                    <label style="margin-bottom:0; margin-top:3%">Product Price:</label>
-                    <input name="productPriceInput" style="height:40px; border-radius: 5px; outline:none; padding-left:10px; cursor:text;" placeholder="Enter Product Price (required)" type="number" step="0.01" required/>
+                    <label style="margin-bottom:0; margin-top:3%">Product Price £:</label>
+                    <input name="productPriceInput" id="productPriceInput" style="height:40px; border-radius: 5px; outline:none; padding-left:10px; cursor:text;" placeholder="Enter Product Price (required)" type="number" step="0.01" required/>
 
                     <button id="createProduct_btn" onclick="" style="display:none; width:80%; height:50px; margin-left: 10%; margin-top:5%; border-radius: 10px; cursor: pointer; background-color:#0051BA; color:#ffffff; font-size: 25px; border:0px; outline:none;">Create</button>
                     <button id="updateProduct_btn" onclick="" style="display:none; width:80%; height:50px; margin-left: 10%; margin-top:5%; border-radius: 10px; cursor: pointer; background-color:#0051BA; color:#ffffff; font-size: 25px; border:0px; outline:none;">Update</button>
@@ -128,6 +128,9 @@
 <script>
 
     function openAddProductOverlay() {
+
+        clearInputs()
+
         document.getElementById("productInputHeader").innerHTML = "Add Product"
         document.getElementById("productInputOverlay").style.display = "flex";
 
@@ -141,12 +144,38 @@
         document.getElementById("productInputOverlay").style.display = "none";
     }
 
-    function openEditProductOverlay() {
-        document.getElementById("productInputHeader").innerHTML = "Update Product"
-        document.getElementById("productInputOverlay").style.display = "flex";
+    function openEditProductOverlay(id) {
 
-        document.getElementById("createProduct_btn").style.display = "none";
-        document.getElementById("updateProduct_btn").style.display = "block";
+        $.ajax({
+            type: "POST",
+            url: "admin/getProduct",
+            headers: {
+                'Access-Control-Allow-Origin':'*'
+            },
+            data: JSON.stringify({
+                    "id": id
+                }),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (data) {
+                
+                console.log(data.id)
+
+                document.getElementById("productCodeInput").value = data.id
+                document.getElementById("productNameInput").value = data.name
+                document.getElementById("ProductDescInput").value = data.desc
+                document.getElementById("productPriceInput").value = data.price
+
+                document.getElementById("productInputHeader").innerHTML = "Update Product"
+                document.getElementById("productInputOverlay").style.display = "flex";
+
+                document.getElementById("createProduct_btn").style.display = "none";
+                document.getElementById("updateProduct_btn").style.display = "block";
+
+
+            }
+        });
+
     }
 
     function openDeleteProductOverlay(id) {
@@ -162,6 +191,16 @@
         document.getElementById("deleteProductOverlay").style.display = "none";
 
     }
+
+    function clearInputs() {
+
+        document.getElementById("productCodeInput").value = ""
+        document.getElementById("productNameInput").value = ""
+        document.getElementById("ProductDescInput").value = ""
+        document.getElementById("productPriceInput").value = ""
+
+    }
+
 
 </script>
 

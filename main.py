@@ -283,6 +283,27 @@ def deleteProduct(productID):
 
     return redirect(url_for('admin'))
 
+@app.route('/admin/getProduct', methods=['POST', 'GET'])
+def getProduct():
+
+    if(request.method == "POST"):
+
+        productData = request.get_json()
+
+        if(request.method == "POST"):
+
+            url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/getProductData"
+            req = requests.post(url, json=
+            {
+                "id":productData['id']
+            }, headers={"Content-type": "application/json", "Accept": "text/plain"})
+
+        productData = req.json()
+
+        productData = productData[0]
+
+        return productData
+
 # 500 Error response
 @app.errorhandler(500)
 def server_error(e):
