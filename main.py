@@ -187,8 +187,14 @@ def updateOrder(orderNumber):
         orderStatus = request.form.get('orderStatus')
         trackingURL = request.form.get('trackingURL')
 
-        print(orderStatus)
-        print(trackingURL)
+        url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/updateOrder"
+        requests.post(url, json={
+            "update_data": {
+                "orderID":orderNumber,
+                "orderStatus":orderStatus,
+                "trackingURL":trackingURL
+            },
+        }, headers={"Content-type": "application/json", "Accept": "text/plain"})
 
         return redirect(url_for('orderView', orderNumber = orderNumber))
 
@@ -228,7 +234,7 @@ def orderHistoryView(orderNumber):
 @app.route('/admin')
 def form():
 
-    return render_template('admin.html')
+    return render_template('admin.html', products=loadProducts())
 
 
 # 500 Error response
@@ -318,10 +324,10 @@ def loadOrders(amount, uid):
         "request_data":{
             "amount":amount,
             "role":session['userRole'],
-            "UID":uid
+            "UID":str(uid)
         }
     })
-
+    
     return req.json()
 
 
@@ -331,7 +337,7 @@ def loadSingleOrder(orderID):
     # TODO Cloud function
     url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/"
     req = requests.post(url, json={
-        "id": orderID,
+        "id": str(orderID),
         })
 
     return req.json()
@@ -360,6 +366,7 @@ def submitOrder(basket_data, cost_data, address_data):
 })
 
     return req.text
+    
 
 def clearCheckoutSessions():
 

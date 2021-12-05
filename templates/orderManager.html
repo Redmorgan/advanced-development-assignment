@@ -54,7 +54,20 @@
                         <label id="orderListItem_2_{{ item['orderID'] }}" style="width: 19.4%; height:100%; margin-bottom: 0px; display: flex; align-items: center;">10/03/2000</label>
                         <label id="orderListItem_3_{{ item['orderID'] }}" style="width: 19.4%; height:100%; margin-bottom: 0px; display: flex; align-items: center;">{{ item['orderContents'] }}</label>
                         <label id="orderListItem_4_{{ item['orderID'] }}" style="width: 19.4%; height:100%; margin-bottom: 0px; display: flex; align-items: center;">£{{ item['billing']['total'] }}</label>
-                        <label id="orderListItem_5_{{ item['orderID'] }}" style="width: 19.4%; height:100%; margin-bottom: 0px; display: flex; align-items: center; font-weight: bold;">{{ item['orderStatus'] }}</label>
+
+                        {% if item['orderStatus'] == "Completed"%}
+
+                            <label id="orderListItem_5_{{ item['orderID'] }}" style="width: 19.4%; height:100%; margin-bottom: 0px; display: flex; align-items: center; font-weight: bold; color:green;">{{ item['orderStatus'] }}</label>
+
+                        {% elif item['orderStatus'] == "Cancelled" %}
+
+                            <label id="orderListItem_5_{{ item['orderID'] }}" style="width: 19.4%; height:100%; margin-bottom: 0px; display: flex; align-items: center; font-weight: bold; color:red;">{{ item['orderStatus'] }}</label>
+
+                        {% else %}
+
+                            <label id="orderListItem_5_{{ item['orderID'] }}" style="width: 19.4%; height:100%; margin-bottom: 0px; display: flex; align-items: center; font-weight: bold;">{{ item['orderStatus'] }}</label>
+
+                        {% endif %}
 
                         <div style="width:3%; height:100%;">
                             
