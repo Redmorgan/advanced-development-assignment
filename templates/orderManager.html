@@ -15,7 +15,7 @@
 <div style="width: 100%; height:100%;">
     <div style="width: 40%; height:100%; margin-left: 30%; margin-top: 20px;">
 
-        <div id ="orderSearchBar" style="width:60%; height:15%; background-color: rgba(244, 244, 244, 1); border-radius: 10px; margin-left: 20%;">
+        <!-- <div id ="orderSearchBar" style="width:60%; height:15%; background-color: rgba(244, 244, 244, 1); border-radius: 10px; margin-left: 20%;">
 
             <label style="margin-top: 2%; margin-left: 2%; margin-bottom: 0px; font-size: 20px; font-weight: bold;">Order Manager: Search and Filter</label>
 
@@ -29,7 +29,7 @@
 
             </div>
 
-        </div>
+        </div> -->
 
         <div id="orderListContainer" style="width: 100%; height:83%; margin-top: 2%;">
 
@@ -74,13 +74,13 @@
                             {% if pageType == "admin" %}
 
                                 <a href="/ordermanager/{{ item['orderID'] }}" style="height:100%; width: 100%; display:flex; align-items: center; justify-content: center;">
-                                    <img src="https://i.imgur.com/0w6NAn5.png" alt="open order plus image" title="Open Order" style="width: 15px; height: 15px; cursor: pointer;"/>
+                                    <img src="https://storage.googleapis.com/teak-amphora-328909.appspot.com/plusIcon.png" alt="open order plus image" title="Open Order" style="width: 15px; height: 15px; cursor: pointer;"/>
                                 </a>
 
                             {% elif pageType == "user" %}
 
                                 <a href="/orderhistory/{{ item['orderID'] }}" style="height:100%; width: 100%; display:flex; align-items: center; justify-content: center;">
-                                    <img src="https://i.imgur.com/0w6NAn5.png" alt="open order plus image" title="Open Order" style="width: 15px; height: 15px; cursor: pointer;"/>
+                                    <img src="https://storage.googleapis.com/teak-amphora-328909.appspot.com/plusIcon.png" alt="open order plus image" title="Open Order" style="width: 15px; height: 15px; cursor: pointer;"/>
                                 </a>
 
                             {% endif %}
