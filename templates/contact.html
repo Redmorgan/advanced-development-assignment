@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% set active_page = "contact" %}
+
+{% block content %}
+
+<div style="width: 100%; height:100%;">
+    <div style="width: 50%; height:100%; margin-left: 25%; display:flex; align-items: center; flex-direction: column;">
+
+        <h1>Need help? Get in touch | IKE-AD</h1>
+
+        <div id="contactOptions" style="width:100%; display: flex; flex-direction: row; justify-content: space-around; margin-top:10px;">
+
+            <div id="contactEmail" style="width:calc(100%/3); padding:30px; border: 1px solid #e6e6e6; display:flex; align-items: center; flex-direction: column; background-color: #ffffff;">
+
+                <img src="https://storage.googleapis.com/teak-amphora-328909.appspot.com/emailIcon.png" style="width: 70px; height:70px;">
+
+                <label style="font-size: 25px; margin-top: 10px;">By Email</label>
+
+                <a style="font-size: 20px; margin-top: 10px;" href="mailto:admin@ikead.com">admin@ikead.com</a>
+
+            </div>
+
+            <div id = "contactMobile" style="width:calc(100%/3); padding:30px; border: 1px solid #e6e6e6; display:flex; align-items: center; flex-direction: column;">
+
+                <img src="https://storage.googleapis.com/teak-amphora-328909.appspot.com/phoneIcon.png" style="width: 70px; height:70px;">
+
+                <label style="font-size: 25px; margin-top: 10px;">By Phone</label>
+
+                <a style="font-size: 20px; margin-top: 10px;" href="tel:07864572201">07864572201</a>
+
+            </div>
+
+        </div>
+
+    </div>
+    
+</div>
+
+
+
+
+{% endblock %}
