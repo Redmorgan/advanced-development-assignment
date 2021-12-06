@@ -93,21 +93,27 @@ def checkout():
 
 @app.route('/checkout/removeItem', methods=['POST', 'GET'])
 def removeItem():
-    if(request.method == "POST"):
 
-        removeItemJSON = request.get_json()
+    if(session['userRole'] == "admin" or session['userRole'] == "user"):
 
-        removeItemID = removeItemJSON['productID']
+        if(request.method == "POST"):
 
-        updatedBasket = []
+            removeItemJSON = request.get_json()
 
-        for item in session['basket']:
-            if item['productID'] != removeItemID:
-                updatedBasket.append(item)
+            removeItemID = removeItemJSON['productID']
 
-        session['basket'] = updatedBasket
+            updatedBasket = []
 
-        return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
+            for item in session['basket']:
+                if item['productID'] != removeItemID:
+                    updatedBasket.append(item)
+
+            session['basket'] = updatedBasket
+
+            return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
+
+    else:
+        return json.dumps({'success':False}), 401, {'ContentType':'application/json'}
 
 
 @app.route('/checkout/address')
@@ -117,32 +123,38 @@ def checkoutAddress():
 
 @app.route('/checkout/address/save', methods=['POST', 'GET'])
 def saveAddresses():
-    if(request.method == "POST"):
 
-        session['address_data'] = (request.form).to_dict()
+    if(session['userRole'] == "admin" or session['userRole'] == "user"):
 
-        address_data = session['address_data']
+        if(request.method == "POST"):
 
-        basket_data = loadBasketContents()
+            session['address_data'] = (request.form).to_dict()
 
-        # Removes the _id field that mongoDB assigns as it causes an error in the POST request
-        for item in basket_data:
-            product = item['product'][0]
-            del product['_id']
+            address_data = session['address_data']
 
-        session['basket_data'] = basket_data
+            basket_data = loadBasketContents()
 
-        cost_data = {"subtotal":"{:.2f}".format(session['subtotal']), "tax":"{:.2f}".format(session['tax']), "total":"{:.2f}".format(session['total'])}
+            # Removes the _id field that mongoDB assigns as it causes an error in the POST request
+            for item in basket_data:
+                product = item['product'][0]
+                del product['_id']
 
-        session['cost_data'] = cost_data
+            session['basket_data'] = basket_data
 
-        orderID = submitOrder(basket_data, cost_data, address_data)
+            cost_data = {"subtotal":"{:.2f}".format(session['subtotal']), "tax":"{:.2f}".format(session['tax']), "total":"{:.2f}".format(session['total'])}
 
-        clearCheckoutSessions()
+            session['cost_data'] = cost_data
 
-        # Cloud function to save order and shit then save order number to session
+            orderID = submitOrder(basket_data, cost_data, address_data)
 
-        return redirect(url_for('orderSubmitted', orderNumber = orderID))
+            clearCheckoutSessions()
+
+            # Cloud function to save order and shit then save order number to session
+
+            return redirect(url_for('orderSubmitted', orderNumber = orderID))
+
+    else:
+        return json.dumps({'success':False}), 401, {'ContentType':'application/json'}
 
 
 @app.route('/ordersubmitted/<orderNumber>')
@@ -190,21 +202,26 @@ def orderView(orderNumber):
 @app.route('/ordermanager/<orderNumber>/update', methods=['POST', 'GET'])
 def updateOrder(orderNumber):
 
-    if(request.method == "POST"):
+    if(session['userRole'] == "admin"):
 
-        orderStatus = request.form.get('orderStatus')
-        trackingURL = request.form.get('trackingURL')
+        if(request.method == "POST"):
 
-        url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/updateOrder"
-        requests.post(url, json={
-            "update_data": {
-                "orderID":orderNumber,
-                "orderStatus":orderStatus,
-                "trackingURL":trackingURL
-            },
-        }, headers={"Content-type": "application/json", "Accept": "text/plain"})
+            orderStatus = request.form.get('orderStatus')
+            trackingURL = request.form.get('trackingURL')
 
-        return redirect(url_for('orderView', orderNumber = orderNumber))
+            url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/updateOrder"
+            requests.post(url, json={
+                "update_data": {
+                    "orderID":orderNumber,
+                    "orderStatus":orderStatus,
+                    "trackingURL":trackingURL
+                },
+            }, headers={"Content-type": "application/json", "Accept": "text/plain"})
+
+            return redirect(url_for('orderView', orderNumber = orderNumber))
+
+    else:
+        return json.dumps({'success':False}), 401, {'ContentType':'application/json'}
 
 
 # User Order History
@@ -243,66 +260,132 @@ def orderHistoryView(orderNumber):
 @app.route('/admin')
 def admin():
 
-    return render_template('admin.html', products=loadProducts())
+    if(session['userRole'] == "admin"):
+
+        return render_template('admin.html', products=loadProducts())
+
+    else:
+        return redirect(url_for('home'))
 
 
 @app.route('/admin/create', methods=['POST', 'GET'])
 def createProduct():
 
-    if(request.method == "POST"):
+    if(session['userRole'] == "admin"):
 
-        storage_client = storage.Client.from_service_account_json("Key.json")
-        bucket = storage_client.bucket('teak-amphora-328909.appspot.com')
-        blob = bucket.blob(request.form.get('productNameInput') + "-" + request.form.get('productCodeInput')+".png")
-        blob.upload_from_file(request.files['productImageUpload'])
+        if(request.method == "POST"):
 
-        url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/createProduct"
-        requests.post(url, json=
-        {
-            "product_data":{
-                "id":request.form.get('productCodeInput'),
-                "name":request.form.get('productNameInput'),
-                "desc":request.form.get('ProductDescInput'),
-                "productUrl":blob.public_url,
-                "price":float(request.form.get('productPriceInput'))
-            }  
-        }, headers={"Content-type": "application/json", "Accept": "text/plain"})
+            file = request.files['productImageUpload']
 
-    return redirect(url_for('admin'))
+            imageURL = uploadImage(file)
+
+            url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/createProduct"
+            requests.post(url, json=
+            {
+                "product_data":{
+                    "id":request.form.get('productCodeInput'),
+                    "name":request.form.get('productNameInput'),
+                    "desc":request.form.get('ProductDescInput'),
+                    "productUrl":imageURL,
+                    "price":float(request.form.get('productPriceInput'))
+                }  
+            }, headers={"Content-type": "application/json", "Accept": "text/plain"})
+
+        return redirect(url_for('admin'))
+    
+    else:
+        return json.dumps({'success':False}), 401, {'ContentType':'application/json'}
 
 @app.route('/admin/delete/<productID>', methods=['POST', 'GET'])
 def deleteProduct(productID):
 
-    if(request.method == "POST"):
+    if(session['userRole'] == "admin"):
 
-        url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/deleteProduct"
-        requests.post(url, json=
-        {
-            "product_id":productID 
-        }, headers={"Content-type": "application/json", "Accept": "text/plain"})
+        if(request.method == "POST"):
 
-    return redirect(url_for('admin'))
+            url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/deleteProduct"
+            requests.post(url, json=
+            {
+                "product_id":productID 
+            }, headers={"Content-type": "application/json", "Accept": "text/plain"})
+
+        return redirect(url_for('admin'))
+    
+    else:
+        return json.dumps({'success':False}), 401, {'ContentType':'application/json'}
+
 
 @app.route('/admin/getProduct', methods=['POST', 'GET'])
 def getProduct():
 
-    if(request.method == "POST"):
-
-        productData = request.get_json()
+    if(session['userRole'] == "admin"):
 
         if(request.method == "POST"):
 
-            url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/getProductData"
-            req = requests.post(url, json=
+            productData = request.get_json()
+
+            if(request.method == "POST"):
+
+                url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/getProductData"
+                req = requests.post(url, json=
+                {
+                    "id":productData['id']
+                }, headers={"Content-type": "application/json", "Accept": "text/plain"})
+
+            productData = req.json()
+
+            productData = productData[0]
+
+            return productData
+    else:
+        return json.dumps({'success':False}), 401, {'ContentType':'application/json'}
+
+@app.route('/admin/update', methods=['POST', 'GET'])
+def updateProduct():
+
+    if(session['userRole'] == "admin"):
+
+        if(request.method == "POST"):
+
+            file = request.files['productImageUpload']
+
+            imageURL = uploadImage(file)
+
+            url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/updateProduct"
+            requests.post(url, json=
             {
-                "id":productData['id']
+                "product_data":{
+                    "originalID":request.form.get('productID'),
+                    "id":request.form.get('productCodeInput'),
+                    "name":request.form.get('productNameInput'),
+                    "desc":request.form.get('ProductDescInput'),
+                    "productUrl":imageURL,
+                    "price":float(request.form.get('productPriceInput'))
+                }  
             }, headers={"Content-type": "application/json", "Accept": "text/plain"})
 
-        productData = req.json()
+        return redirect(url_for('admin'))
+    
+    else:
+        return json.dumps({'success':False}), 401, {'ContentType':'application/json'}
 
-        productData = productData[0]
+@app.route('/contact')
+def contact():
 
-        return productData
+    return render_template('contact.html')
+
+def uploadImage(file):
+    if(file.filename != ''):
+        storage_client = storage.Client.from_service_account_json("Key.json")
+        bucket = storage_client.bucket('teak-amphora-328909.appspot.com')
+        blob = bucket.blob(file.filename)
+        # blob = bucket.blob(request.form.get('productNameInput') + "-" + request.form.get('productCodeInput')+".png")
+        blob.upload_from_file(request.files['productImageUpload'])
+        imageURL = blob.public_url
+    else:
+        imageURL = ""
+
+    return imageURL
 
 # 500 Error response
 @app.errorhandler(500)
