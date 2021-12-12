@@ -5,7 +5,14 @@ import os
 import requests
 import json
 
-def get_product_list(request):
+def get_user_role(request):
+
+  request_json = request.get_json(silent=True)
+
+  if(request_json and 'id' in request_json):
+    userID = request_json['id']
+  else:
+    userID = request.args.get("id")
 
   mongoURL = requests.get("https://us-central1-teak-amphora-328909.cloudfunctions.net/getMongoURL")
 
@@ -13,10 +20,9 @@ def get_product_list(request):
 
   db=client.AD_Assignment
 
-  myCursor=db.Products.find({})
+  myCursor=db.Users.find({"id":userID})
 
   list_cur=list(myCursor)
-  print(list_cur)
 
   json_data=dumps(list_cur)
 

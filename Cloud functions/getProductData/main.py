@@ -5,7 +5,14 @@ import os
 import requests
 import json
 
-def get_product_list(request):
+def get_product_data(request):
+
+  request_json = request.get_json(silent=True)
+
+  if(request_json and 'id' in request_json):
+    productID = request_json['id']
+  else:
+    productID = request.args.get("id")
 
   mongoURL = requests.get("https://us-central1-teak-amphora-328909.cloudfunctions.net/getMongoURL")
 
@@ -13,12 +20,7 @@ def get_product_list(request):
 
   db=client.AD_Assignment
 
-  myCursor=db.Products.find({})
+  myCursor=db.Products.find({"id":productID})
 
-  list_cur=list(myCursor)
-  print(list_cur)
-
-  json_data=dumps(list_cur)
-
-  return json_data
+  return dumps(myCursor)
  

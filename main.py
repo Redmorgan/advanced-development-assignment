@@ -379,7 +379,6 @@ def uploadImage(file):
         storage_client = storage.Client.from_service_account_json("Key.json")
         bucket = storage_client.bucket('teak-amphora-328909.appspot.com')
         blob = bucket.blob(file.filename)
-        # blob = bucket.blob(request.form.get('productNameInput') + "-" + request.form.get('productCodeInput')+".png")
         blob.upload_from_file(request.files['productImageUpload'])
         imageURL = blob.public_url
     else:
