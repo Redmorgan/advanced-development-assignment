@@ -9,12 +9,12 @@ app = Flask(__name__)
 
 app.config['SECRET_KEY'] = '6ccdb527e50c20c5deb736d0d090f584'
 
-
+# Main page of the website where users add items to their basket.
 @app.route('/', methods=['POST', 'GET'])
 @app.route('/store', methods=['POST', 'GET'])
 def home():
 
-    #Clears session if not logged in.
+    # Clears session if not logged in.
     if (not request.cookies.get("token")):
         session.clear()
 
@@ -67,7 +67,7 @@ def checkout():
         else:
 
             basket = loadBasketContents()
-            
+
             subTotal = 0
             for item in basket:
                 subTotal += (item['product'][0]['price'] * item['quantity'])
@@ -84,13 +84,13 @@ def checkout():
             else:
                 disable = False
 
-            return render_template('checkout.html', basket=basket, subTotal="{:.2f}".format(subTotal), tax="{:.2f}".format(tax), orderTotal = "{:.2f}".format(subTotal+tax), disable=disable)
+            return render_template('checkout.html', basket=basket, subTotal="{:.2f}".format(subTotal), tax="{:.2f}".format(tax), orderTotal="{:.2f}".format(subTotal+tax), disable=disable)
 
     else:
-        
+
         return redirect(url_for('home'))
 
-
+# User Checkout - Remove item from basket.
 @app.route('/checkout/removeItem', methods=['POST', 'GET'])
 def removeItem():
 
@@ -110,17 +110,17 @@ def removeItem():
 
             session['basket'] = updatedBasket
 
-            return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
+            return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
     else:
-        return json.dumps({'success':False}), 401, {'ContentType':'application/json'}
+        return json.dumps({'success': False}), 401, {'ContentType': 'application/json'}
 
-
+# Billing and Delivery address input page.
 @app.route('/checkout/address')
 def checkoutAddress():
     return render_template('orderAddress.html')
 
-
+#Billing and Delivery address input page - Save Addresses
 @app.route('/checkout/address/save', methods=['POST', 'GET'])
 def saveAddresses():
 
@@ -141,7 +141,8 @@ def saveAddresses():
 
             session['basket_data'] = basket_data
 
-            cost_data = {"subtotal":"{:.2f}".format(session['subtotal']), "tax":"{:.2f}".format(session['tax']), "total":"{:.2f}".format(session['total'])}
+            cost_data = {"subtotal": "{:.2f}".format(session['subtotal']), "tax": "{:.2f}".format(
+                session['tax']), "total": "{:.2f}".format(session['total'])}
 
             session['cost_data'] = cost_data
 
@@ -151,22 +152,19 @@ def saveAddresses():
 
             # Cloud function to save order and shit then save order number to session
 
-            return redirect(url_for('orderSubmitted', orderNumber = orderID))
+            return redirect(url_for('orderSubmitted', orderNumber=orderID))
 
     else:
-        return json.dumps({'success':False}), 401, {'ContentType':'application/json'}
+        return json.dumps({'success': False}), 401, {'ContentType': 'application/json'}
 
-
+# Order Submitted Page
 @app.route('/ordersubmitted/<orderNumber>')
 def orderSubmitted(orderNumber):
 
-    # Cloud function to use saved order number to pull all the order data
+    return render_template('orderSubmitted.html', orderNumber=orderNumber, basket=session['basket_data'], cost=session['cost_data'], address=session['address_data'])
 
 
-    return render_template('orderSubmitted.html', orderNumber = orderNumber, basket = session['basket_data'], cost = session['cost_data'], address = session['address_data'])
-
-
-# Admin Order Manager
+# Admin Order Manager (All orders)
 @app.route('/ordermanager')
 def orderManager():
 
@@ -175,7 +173,7 @@ def orderManager():
 
         orders = loadOrders("All", request.cookies.get("token"))
 
-        return render_template('orderManager.html', pageType="admin", order = orders)
+        return render_template('orderManager.html', pageType="admin", order=orders)
 
     else:
 
@@ -191,14 +189,14 @@ def orderView(orderNumber):
 
         order = loadOrders("Single", int(orderNumber))
 
-        return render_template('orderView.html', pageType="admin", order = order)
+        return render_template('orderView.html', pageType="admin", order=order)
 
     else:
 
         return redirect(url_for('home'))
 
 
-# Admin Order Manager (Single order)
+# Admin Order Manager (Single order) - Update order details
 @app.route('/ordermanager/<orderNumber>/update', methods=['POST', 'GET'])
 def updateOrder(orderNumber):
 
@@ -212,26 +210,26 @@ def updateOrder(orderNumber):
             url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/updateOrder"
             requests.post(url, json={
                 "update_data": {
-                    "orderID":orderNumber,
-                    "orderStatus":orderStatus,
-                    "trackingURL":trackingURL
+                    "orderID": orderNumber,
+                    "orderStatus": orderStatus,
+                    "trackingURL": trackingURL
                 },
             }, headers={"Content-type": "application/json", "Accept": "text/plain"})
 
-            return redirect(url_for('orderView', orderNumber = orderNumber))
+            return redirect(url_for('orderView', orderNumber=orderNumber))
 
     else:
-        return json.dumps({'success':False}), 401, {'ContentType':'application/json'}
+        return json.dumps({'success': False}), 401, {'ContentType': 'application/json'}
 
 
-# User Order History
+# User Order History (All orders)
 @app.route('/orderhistory')
 def orderHistory():
 
     # Get all order information
     if (session['userRole'] == "admin" or session['userRole'] == "user"):
 
-        orders = loadOrders("All", request.cookies.get("token"))
+        orders = loadOrders("All", session['authToken'])
 
         return render_template('orderManager.html', pageType="user", order=orders)
 
@@ -267,7 +265,7 @@ def admin():
     else:
         return redirect(url_for('home'))
 
-
+# Admin Controls - Create New Product
 @app.route('/admin/create', methods=['POST', 'GET'])
 def createProduct():
 
@@ -280,22 +278,22 @@ def createProduct():
             imageURL = uploadImage(file)
 
             url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/createProduct"
-            requests.post(url, json=
-            {
-                "product_data":{
-                    "id":request.form.get('productCodeInput'),
-                    "name":request.form.get('productNameInput'),
-                    "desc":request.form.get('ProductDescInput'),
-                    "productUrl":imageURL,
-                    "price":float(request.form.get('productPriceInput'))
-                }  
+            requests.post(url, json={
+                "product_data": {
+                    "id": request.form.get('productCodeInput'),
+                    "name": request.form.get('productNameInput'),
+                    "desc": request.form.get('ProductDescInput'),
+                    "productUrl": imageURL,
+                    "price": float(request.form.get('productPriceInput'))
+                }
             }, headers={"Content-type": "application/json", "Accept": "text/plain"})
 
         return redirect(url_for('admin'))
-    
-    else:
-        return json.dumps({'success':False}), 401, {'ContentType':'application/json'}
 
+    else:
+        return json.dumps({'success': False}), 401, {'ContentType': 'application/json'}
+
+# Admin Controls - Delete Product based on productID
 @app.route('/admin/delete/<productID>', methods=['POST', 'GET'])
 def deleteProduct(productID):
 
@@ -304,17 +302,16 @@ def deleteProduct(productID):
         if(request.method == "POST"):
 
             url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/deleteProduct"
-            requests.post(url, json=
-            {
-                "product_id":productID 
+            requests.post(url, json={
+                "product_id": productID
             }, headers={"Content-type": "application/json", "Accept": "text/plain"})
 
         return redirect(url_for('admin'))
-    
+
     else:
-        return json.dumps({'success':False}), 401, {'ContentType':'application/json'}
+        return json.dumps({'success': False}), 401, {'ContentType': 'application/json'}
 
-
+# Admin Controls - Get Product Data
 @app.route('/admin/getProduct', methods=['POST', 'GET'])
 def getProduct():
 
@@ -327,9 +324,8 @@ def getProduct():
             if(request.method == "POST"):
 
                 url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/getProductData"
-                req = requests.post(url, json=
-                {
-                    "id":productData['id']
+                req = requests.post(url, json={
+                    "id": productData['id']
                 }, headers={"Content-type": "application/json", "Accept": "text/plain"})
 
             productData = req.json()
@@ -338,8 +334,9 @@ def getProduct():
 
             return productData
     else:
-        return json.dumps({'success':False}), 401, {'ContentType':'application/json'}
+        return json.dumps({'success': False}), 401, {'ContentType': 'application/json'}
 
+# Admin Controls - Update Product Data
 @app.route('/admin/update', methods=['POST', 'GET'])
 def updateProduct():
 
@@ -352,31 +349,33 @@ def updateProduct():
             imageURL = uploadImage(file)
 
             url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/updateProduct"
-            requests.post(url, json=
-            {
-                "product_data":{
-                    "originalID":request.form.get('productID'),
-                    "id":request.form.get('productCodeInput'),
-                    "name":request.form.get('productNameInput'),
-                    "desc":request.form.get('ProductDescInput'),
-                    "productUrl":imageURL,
-                    "price":float(request.form.get('productPriceInput'))
-                }  
+            requests.post(url, json={
+                "product_data": {
+                    "originalID": request.form.get('productID'),
+                    "id": request.form.get('productCodeInput'),
+                    "name": request.form.get('productNameInput'),
+                    "desc": request.form.get('ProductDescInput'),
+                    "productUrl": imageURL,
+                    "price": float(request.form.get('productPriceInput'))
+                }
             }, headers={"Content-type": "application/json", "Accept": "text/plain"})
 
         return redirect(url_for('admin'))
-    
-    else:
-        return json.dumps({'success':False}), 401, {'ContentType':'application/json'}
 
+    else:
+        return json.dumps({'success': False}), 401, {'ContentType': 'application/json'}
+
+# Contact Page
 @app.route('/contact')
 def contact():
 
     return render_template('contact.html')
 
+# Upload image to Google Storage Bucket
 def uploadImage(file):
     if(file.filename != ''):
-        storage_client = storage.Client.from_service_account_json("Key.json")
+        storage_client = storage.Client.from_service_account_json(
+            "google_key.json")
         bucket = storage_client.bucket('teak-amphora-328909.appspot.com')
         blob = bucket.blob(file.filename)
         blob.upload_from_file(request.files['productImageUpload'])
@@ -400,16 +399,17 @@ def server_error(e):
 def page_not_found(error):
     return render_template('404.html'), 404
 
-
+# Injects authentication data into every page
 @app.context_processor
 def injectGlobals():
 
     userData = authenticate()
     return dict(token=userData[0], name=userData[1], role=userData[2])
 
-
+# Gets authentication data from cookies set by firebase login
 def authenticate():
     authToken = request.cookies.get("token")
+    session['authToken'] = authToken
     userName = request.cookies.get("name")
 
     if (authToken != ""):
@@ -457,7 +457,8 @@ def addNewUser(UID):
 def loadProducts():
 
     url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/collectProducts"
-    req = requests.get(url, headers={"Content-type": "application/json", "Accept": "text/plain"})
+    req = requests.get(
+        url, headers={"Content-type": "application/json", "Accept": "text/plain"})
 
     return req.json()
 
@@ -472,52 +473,52 @@ def loadOrders(amount, uid):
     url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/getOrder"
 
     req = requests.post(url, json={
-        "request_data":{
-            "amount":amount,
-            "role":session['userRole'],
-            "UID":str(uid)
+        "request_data": {
+            "amount": amount,
+            "role": session['userRole'],
+            "UID": str(uid)
         }
     })
-    
+
     return req.json()
 
-
+# Collects a list of product objects based on a list of product IDs
 def loadBasketContents():
 
     url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/getBasketItemsByID"
     req = requests.post(url, json={
         "basket": session['basket'],
-        })
+    })
 
     basketItems = req.json()
 
     return basketItems
 
-
+# Submits the order data to mongoDB.
 def submitOrder(basket_data, cost_data, address_data):
 
     date = datetime.now()
 
     url = "https://europe-west2-teak-amphora-328909.cloudfunctions.net/createNewOrder"
     req = requests.post(url, json={
-    "order_data":{
-        "userID":request.cookies.get("token"),
-        "basket_data":basket_data,
-        "cost_data":cost_data,
-        "address_data":address_data,
-        "order_date":date.strftime("%d/%m/%y")
-    }
-})
+        "order_data": {
+            "userID": request.cookies.get("token"),
+            "basket_data": basket_data,
+            "cost_data": cost_data,
+            "address_data": address_data,
+            "order_date": date.strftime("%d/%m/%y")
+        }
+    })
 
     return req.text
-    
 
+# Clears the session data for the checkout.
 def clearCheckoutSessions():
 
-        session['basket'] = []
-        session['subtotal'] = None
-        session['tax'] = None
-        session['total'] = None
+    session['basket'] = []
+    session['subtotal'] = None
+    session['tax'] = None
+    session['total'] = None
 
 
 if __name__ == '__main__':
