@@ -84,7 +84,7 @@ function logout() {
 
     const auth = firebase.auth();
     auth.signOut();
-    
+
     document.cookie = "token="
     document.cookie = "name="
     location.href = "/";

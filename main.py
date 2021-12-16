@@ -90,6 +90,7 @@ def checkout():
 
         return redirect(url_for('home'))
 
+
 # User Checkout - Remove item from basket.
 @app.route('/checkout/removeItem', methods=['POST', 'GET'])
 def removeItem():
@@ -115,10 +116,12 @@ def removeItem():
     else:
         return json.dumps({'success': False}), 401, {'ContentType': 'application/json'}
 
+
 # Billing and Delivery address input page.
 @app.route('/checkout/address')
 def checkoutAddress():
     return render_template('orderAddress.html')
+
 
 #Billing and Delivery address input page - Save Addresses
 @app.route('/checkout/address/save', methods=['POST', 'GET'])
@@ -156,6 +159,7 @@ def saveAddresses():
 
     else:
         return json.dumps({'success': False}), 401, {'ContentType': 'application/json'}
+
 
 # Order Submitted Page
 @app.route('/ordersubmitted/<orderNumber>')
@@ -265,6 +269,7 @@ def admin():
     else:
         return redirect(url_for('home'))
 
+
 # Admin Controls - Create New Product
 @app.route('/admin/create', methods=['POST', 'GET'])
 def createProduct():
@@ -293,6 +298,7 @@ def createProduct():
     else:
         return json.dumps({'success': False}), 401, {'ContentType': 'application/json'}
 
+
 # Admin Controls - Delete Product based on productID
 @app.route('/admin/delete/<productID>', methods=['POST', 'GET'])
 def deleteProduct(productID):
@@ -310,6 +316,7 @@ def deleteProduct(productID):
 
     else:
         return json.dumps({'success': False}), 401, {'ContentType': 'application/json'}
+
 
 # Admin Controls - Get Product Data
 @app.route('/admin/getProduct', methods=['POST', 'GET'])
@@ -335,6 +342,7 @@ def getProduct():
             return productData
     else:
         return json.dumps({'success': False}), 401, {'ContentType': 'application/json'}
+
 
 # Admin Controls - Update Product Data
 @app.route('/admin/update', methods=['POST', 'GET'])
@@ -365,11 +373,13 @@ def updateProduct():
     else:
         return json.dumps({'success': False}), 401, {'ContentType': 'application/json'}
 
+
 # Contact Page
 @app.route('/contact')
 def contact():
 
     return render_template('contact.html')
+
 
 # Upload image to Google Storage Bucket
 def uploadImage(file):
@@ -385,6 +395,7 @@ def uploadImage(file):
 
     return imageURL
 
+
 # 500 Error response
 @app.errorhandler(500)
 def server_error(e):
@@ -399,12 +410,14 @@ def server_error(e):
 def page_not_found(error):
     return render_template('404.html'), 404
 
+
 # Injects authentication data into every page
 @app.context_processor
 def injectGlobals():
 
     userData = authenticate()
     return dict(token=userData[0], name=userData[1], role=userData[2])
+
 
 # Gets authentication data from cookies set by firebase login
 def authenticate():
@@ -482,6 +495,7 @@ def loadOrders(amount, uid):
 
     return req.json()
 
+
 # Collects a list of product objects based on a list of product IDs
 def loadBasketContents():
 
@@ -493,6 +507,7 @@ def loadBasketContents():
     basketItems = req.json()
 
     return basketItems
+
 
 # Submits the order data to mongoDB.
 def submitOrder(basket_data, cost_data, address_data):
@@ -511,6 +526,7 @@ def submitOrder(basket_data, cost_data, address_data):
     })
 
     return req.text
+
 
 # Clears the session data for the checkout.
 def clearCheckoutSessions():
